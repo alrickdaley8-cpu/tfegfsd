@@ -177,9 +177,9 @@ def check_sff():
     first_spr = struct.unpack_from("<I", d, 36)[0]
     n_spr = struct.unpack_from("<I", d, 40)[0]
     first_pal = struct.unpack_from("<I", d, 44)[0]
-    if first_pal != first_spr + 26 * n_spr:
+    if first_pal != first_spr + 28 * n_spr:
         warn(f"SFF sprite-header stride mismatch (first_pal={first_pal}, "
-             f"expected {first_spr + 26*n_spr})")
+             f"expected {first_spr + 28*n_spr}) — need 28-byte headers (group,u16..flags)")
 
 
 def check_snd():

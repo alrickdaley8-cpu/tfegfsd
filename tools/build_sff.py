@@ -15,11 +15,12 @@ Format notes (verified against Ikemen-GO src/image.go):
       52   4  lofs  (offset of data region; sprite/palette offsets are relative to this)
       56   4  reserved
       60   4  tofs  (total file size)
-  * Sprite header is 26 bytes (IKEMEN GO readHeaderV2 uses a 26-byte stride):
+  * Sprite header is 28 bytes (IKEMEN GO readHeaderV2 + shofs+=28):
        group u16, number u16, width u16, height u16,
        xaxis i16, yaxis i16, link u16, format u8, coldepth u8,
-       dataOffset u32, dataLength u32, palidx u16
-    We store sprites as RAW 8-bit indexed pixel data (format 0, coldepth 8).
+       dataOffset u32, dataLength u32, palidx u16, flags u16
+    We store sprites as RAW 8-bit indexed pixel data (format 0, coldepth 8,
+    flags 0 -> offset relative to lofs).
   * Palette header is 16 bytes:
        group u16, index u16, numcolors u16, link u16, offset u32, size u32
     Palette data is size/4 RGBA quads (R,G,B,A little-endian).
@@ -101,7 +102,7 @@ def main():
     n_palettes = len(palette_entries)
 
     header_size = 64
-    sprite_hdr_size = 26
+    sprite_hdr_size = 28  # engine readHeaderV2 + shofs+=28 (group,u16..flags u16)
     pal_hdr_size = 16
 
     first_sprite_hdr = header_size
@@ -137,7 +138,8 @@ def main():
             u16(0) +                 # link
             bytes((0, 8)) +          # format 0 (raw), coldepth 8
             u32(off) + u32(len(raw)) +
-            u16(1)                   # palidx -> (1,1) default palette
+            u16(1) +                 # palidx -> (1,1) default palette
+            u16(0)                   # flags: 0 = offset relative to lofs
         )
         assert len(hdr) == sprite_hdr_size
         sprite_headers.append(hdr)
