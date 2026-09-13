@@ -2,21 +2,16 @@
 
 This is a fan-made character; the items below are the honest, current gaps.
 
-## 1. Visuals are placeholders (primary)
+## 1. Visuals are line art (colorized, auto-mapped)
 
-**The primary visual — the user's AI-generated Saturn sprite — has not yet been
-processed into the character.** The current `Saturn.sff` ships procedural,
-placeholder art (`tools/saturn_assets.py`). To use the real sprite, run:
-
-```bash
-python3 tools/ingest_sprite.py --input path/to/saturn.png --preview
-```
-
-The ingest tool derives most frames from the supplied art. Frames that are only
-approximate (attack keyframes, knockdown, KO) are labelled in
-`chars/Saturn/_build/sprites/manifest.json` with `"placeholder": true` — they
-are **clearly marked**, not silently fabricated, and should be replaced with
-hand-authored keyframes for a polished result.
+The user's sprite sheet (`chars/Saturn/source/clean_sheet.png`) is **black-and-white
+line art**, so the pipeline applies a flat 3-tone palette (dark outline / white
+head+beard / violet robe) via `tools/colorize_and_build.py`. The sheet has no
+machine-readable labels, so the figure→animation mapping in `MAPPING.md` is a
+**best-guess** — review `chars/Saturn/_build/sprites/preview.png` and
+`chars/Saturn/_build/figures/colorized_contact_sheet.png`, then tell the author
+which frame goes where (or edit `SLOT_MAP` and re-run the tool). A colored
+sheet would let `tools/ingest_sprite.py` be used directly for full-color art.
 
 ## 2. Audio is synthesized placeholders
 

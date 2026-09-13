@@ -47,7 +47,8 @@ python3 tools/validate.py
 Then copy `chars/Saturn/` into your IKEMEN GO `chars/` directory and add
 `Saturn` to your `select.def`. See `chars/Saturn/INSTALL.md`.
 
-> **Note on the visual asset:** the current sprite art is a procedural
-> placeholder. The primary visual is meant to be the user's AI-generated Saturn
-> sprite, ingested via `tools/ingest_sprite.py`. Placeholder/derived frames are
-> labelled in `chars/Saturn/_build/sprites/manifest.json`.
+> **Note on the visual asset:** the character uses the user's own AI-generated
+> Saturn sprite sheet (`chars/Saturn/source/clean_sheet.png`), which is line art.
+> The pipeline colorizes it (violet robe / white beard / dark outline) and maps
+> frames to animations. See `chars/Saturn/MAPPING.md` for the frame mapping and
+> how to correct it, and `tools/colorize_and_build.py` to rebuild.
