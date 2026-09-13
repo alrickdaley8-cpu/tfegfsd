@@ -1,0 +1,170 @@
+[
+ {
+  "group": 5,
+  "number": 0,
+  "name": "hit_light",
+  "file": "5_0.wav",
+  "bytes": 7100
+ },
+ {
+  "group": 5,
+  "number": 1,
+  "name": "hit_medium",
+  "file": "5_1.wav",
+  "bytes": 9746
+ },
+ {
+  "group": 5,
+  "number": 2,
+  "name": "hit_heavy",
+  "file": "5_2.wav",
+  "bytes": 13274
+ },
+ {
+  "group": 5,
+  "number": 3,
+  "name": "guard",
+  "file": "5_3.wav",
+  "bytes": 4454
+ },
+ {
+  "group": 5,
+  "number": 4,
+  "name": "slash",
+  "file": "5_4.wav",
+  "bytes": 9746
+ },
+ {
+  "group": 5,
+  "number": 5,
+  "name": "claw",
+  "file": "5_5.wav",
+  "bytes": 12392
+ },
+ {
+  "group": 5,
+  "number": 6,
+  "name": "fire",
+  "file": "5_6.wav",
+  "bytes": 8864
+ },
+ {
+  "group": 5,
+  "number": 7,
+  "name": "proj_hit",
+  "file": "5_7.wav",
+  "bytes": 7100
+ },
+ {
+  "group": 5,
+  "number": 8,
+  "name": "explosion",
+  "file": "5_8.wav",
+  "bytes": 26504
+ },
+ {
+  "group": 5,
+  "number": 9,
+  "name": "shockwave",
+  "file": "5_9.wav",
+  "bytes": 17684
+ },
+ {
+  "group": 5,
+  "number": 10,
+  "name": "transform",
+  "file": "5_10.wav",
+  "bytes": 48554
+ },
+ {
+  "group": 5,
+  "number": 11,
+  "name": "heal",
+  "file": "5_11.wav",
+  "bytes": 39734
+ },
+ {
+  "group": 5,
+  "number": 12,
+  "name": "hiss",
+  "file": "5_12.wav",
+  "bytes": 22094
+ },
+ {
+  "group": 5,
+  "number": 13,
+  "name": "rumble",
+  "file": "5_13.wav",
+  "bytes": 35324
+ },
+ {
+  "group": 5,
+  "number": 14,
+  "name": "eerie",
+  "file": "5_14.wav",
+  "bytes": 30912
+ },
+ {
+  "group": 5,
+  "number": 15,
+  "name": "land",
+  "file": "5_15.wav",
+  "bytes": 7982
+ },
+ {
+  "group": 5,
+  "number": 16,
+  "name": "whoosh",
+  "file": "5_16.wav",
+  "bytes": 13274
+ },
+ {
+  "group": 5,
+  "number": 17,
+  "name": "sparkle",
+  "file": "5_17.wav",
+  "bytes": 11068
+ },
+ {
+  "group": 10,
+  "number": 0,
+  "name": "roar1",
+  "file": "10_0.wav",
+  "bytes": 39734
+ },
+ {
+  "group": 10,
+  "number": 1,
+  "name": "roar2",
+  "file": "10_1.wav",
+  "bytes": 48554
+ },
+ {
+  "group": 10,
+  "number": 2,
+  "name": "grunt1",
+  "file": "10_2.wav",
+  "bytes": 11068
+ },
+ {
+  "group": 10,
+  "number": 3,
+  "name": "grunt2",
+  "file": "10_3.wav",
+  "bytes": 13274
+ },
+ {
+  "group": 10,
+  "number": 4,
+  "name": "laugh",
+  "file": "10_4.wav",
+  "bytes": 61782
+ },
+ {
+  "group": 10,
+  "number": 5,
+  "name": "shout",
+  "file": "10_5.wav",
+  "bytes": 30912
+ }
+]

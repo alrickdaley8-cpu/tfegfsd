@@ -1,0 +1,40 @@
+;==============================================================================
+; Saturn.def  —  Saint Jaygarcia Saturn (fan character, original assets)
+;==============================================================================
+; Targets IKEMEN GO (0.99 / 1.x). Uses classic M.U.G.E.N-compatible sections.
+;
+; NOTE for IKEMEN GO: the engine compiles character states from the files
+; listed in `st` / `st1` / `st2` (the `^st[0-9]*$` keys), the command file, and
+; any `stcommon`. We intentionally OMIT `stcommon` so the engine's own
+; data/common1.cns.zss provides the standard common states.
+;
+; The four selectable palettes are embedded in Saturn.sff as palette
+; group 1, index 1..4 (the convention the engine remaps on palette select).
+;==============================================================================
+
+[Info]
+name         = "Saturn"
+displayname  = "Saturn"
+versiondate  = 09,13,2026
+mugenversion = 1.1
+ikemenversion= 0.99
+author       = "Arena Fan Character"
+pal.defaults = 1,2,3,4
+
+[Files]
+cmd      = Saturn.cmd
+cns      = Saturn.cns
+st       = Saturn.st
+st1      = Saturn1.st
+st2      = Saturn2.st
+sprite   = Saturn.sff
+anim     = Saturn.air
+sound    = Saturn.snd
+pal1     = 1,1
+pal2     = 1,2
+pal3     = 1,3
+pal4     = 1,4
+
+[Arcade]
+intro.storyboard =
+ending.storyboard =
