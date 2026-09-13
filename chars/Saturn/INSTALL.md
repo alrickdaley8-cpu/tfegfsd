@@ -48,26 +48,30 @@
 ## Rebuilding assets (optional — only if you change source art/audio)
 
 The runtime files `Saturn.sff` and `Saturn.snd` are already built and committed.
-If you edit the source assets under `chars/Saturn/_build/`, regenerate with:
 
-```bash
-python3 tools/gen_sounds.py      # regenerate _build/sounds/*.wav
-python3 tools/build_snd.py       # repack Saturn.snd
-python3 tools/saturn_assets.py   # regenerate placeholder sprites (only if needed)
-python3 tools/build_sff.py       # repack Saturn.sff
-```
+* Your **current art** (`chars/Saturn/source/clean_sheet.png`, 6×3 line-art sheet) is already colorized and packed — rebuild it with:
 
-Or run the convenience script:
+  ```bash
+  python3 tools/colorize_and_build.py   # re-slice + re-colorize + repack Saturn.sff
+  python3 tools/validate.py             # offline cross-check
+  ```
 
-```bash
-bash tools/build.sh
-```
+* For sounds:
+
+  ```bash
+  python3 tools/gen_sounds.py      # regenerate _build/sounds/*.wav
+  python3 tools/build_snd.py       # repack Saturn.snd
+  ```
+
+* Or run the convenience script:
+
+  ```bash
+  bash tools/build.sh
+  ```
 
 ## Using your own Saturn sprite (important)
 
-The character currently ships with **procedurally generated placeholder
-sprites**. To build the sprite set from your own AI-generated Saturn image
-(single render **or** sprite sheet):
+The character currently ships with your **colorized line-art sheet** (black-and-white art → 3-tone palette via `tools/colorize_and_build.py` — see `MAPPING.md` for the figure→slot table). To replace it with a new image (single render **or** colored sprite sheet):
 
 ```bash
 python3 tools/ingest_sprite.py --input path/to/saturn.png --preview
