@@ -5805,6 +5805,32 @@
       ],
       "kind": "vfx",
       "placeholder": false
+    },
+    {
+      "group": 9000,
+      "index": 0,
+      "file": "9000_0.png",
+      "w": 128,
+      "h": 168,
+      "axis": [
+        64,
+        160
+      ],
+      "kind": "portrait",
+      "placeholder": false
+    },
+    {
+      "group": 9000,
+      "index": 1,
+      "file": "9000_1.png",
+      "w": 128,
+      "h": 168,
+      "axis": [
+        64,
+        160
+      ],
+      "kind": "portrait",
+      "placeholder": false
     }
   ]
 }

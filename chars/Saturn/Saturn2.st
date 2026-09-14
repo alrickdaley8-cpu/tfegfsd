@@ -129,11 +129,11 @@ ownpal = 1
 scale = 1.6, 1.6
 
 [State 3100, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [34, 38]
-clsn1default = 1
-clsn1[0] = 10, -170, 80, -20
-
+group = Clsn1
+index = 0
+rect = 10, -170, 80, -20
 [State 3100, HitDef]
 type = HitDef
 trigger1 = !time
@@ -241,11 +241,11 @@ ownpal = 1
 scale = 1.3, 1.3
 
 [State 3200, Phase 1 box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [40, 44]
-clsn1default = 1
-clsn1[0] = 16, -150, 72, -30
-
+group = Clsn1
+index = 0
+rect = 16, -150, 72, -30
 [State 3200, Phase 1 HitDef]
 type = HitDef
 trigger1 = time = 40
@@ -281,11 +281,11 @@ ownpal = 1
 scale = 1.3, 1.3
 
 [State 3200, Phase 2 box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [48, 52]
-clsn1default = 1
-clsn1[0] = 16, -150, 72, -30
-
+group = Clsn1
+index = 0
+rect = 16, -150, 72, -30
 [State 3200, Phase 2 HitDef]
 type = HitDef
 trigger1 = time = 48
@@ -321,11 +321,11 @@ ownpal = 1
 scale = 1.6, 1.6
 
 [State 3200, Phase 3 box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [56, 60]
-clsn1default = 1
-clsn1[0] = 8, -160, 82, -16
-
+group = Clsn1
+index = 0
+rect = 8, -160, 82, -16
 [State 3200, Phase 3 HitDef]
 type = HitDef
 trigger1 = time = 56
@@ -430,12 +430,17 @@ ownpal = 1
 scale = 2.6, 2.6
 
 [State 3300, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [60, 64]
-clsn1default = 1
-clsn1[0] = 0, -180, 96, -8
-clsn1[1] = -30, -150, 30, -60
-
+group = Clsn1
+index = 0
+rect = 0, -180, 96, -8
+[State 3300, Attack box B]
+type = OverrideClsn
+trigger1 = time = [60, 64]
+group = Clsn1
+index = 1
+rect = -30, -150, 30, -60
 [State 3300, HitDef]
 type = HitDef
 trigger1 = time = 60

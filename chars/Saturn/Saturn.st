@@ -83,36 +83,35 @@ value = 1.0
 
 ;--- Persistent hurtbox (boss weakness: large boxes) --------------------------
 [State -2, Hurtbox Stand]
-type = Clsn2
+type = OverrideClsn
 trigger1 = statetype = S
-clsn2default = 2
-clsn2[0] = -30,   0, 30, -152
-clsn2[1] = -20, -40, 20, -110
-
+group = Clsn2
+index = 0
+rect = -30,   0, 30, -152
+[State -2, Hurtbox Stand B]
+type = OverrideClsn
+trigger1 = statetype = S
+group = Clsn2
+index = 1
+rect = -20, -40, 20, -110
 [State -2, Hurtbox Crouch]
-type = Clsn2
+type = OverrideClsn
 trigger1 = statetype = C
-clsn2default = 1
-clsn2[0] = -32,   0, 32,  -96
-
+group = Clsn2
+index = 0
+rect = -32,   0, 32,  -96
 [State -2, Hurtbox Air]
-type = Clsn2
+type = OverrideClsn
 trigger1 = statetype = A
-clsn2default = 1
-clsn2[0] = -28,   0, 28, -140
-
+group = Clsn2
+index = 0
+rect = -28,   0, 28, -140
 [State -2, Hurtbox Lie]
-type = Clsn2
+type = OverrideClsn
 trigger1 = statetype = L
-clsn2default = 1
-clsn2[0] = -62,   0, 62,  -44
-
-;------------------------------------------------------------------------------
-; CANCEL DISPATCHER  (special / super cancels from normals & specials)
-;------------------------------------------------------------------------------
-; Only fires while an attack has actually connected (movecontact) and while the
-; player is still inside the source state, so a single cancel can never chain
-; into itself (the destination state leaves the trigger ranges).
+group = Clsn2
+index = 0
+rect = -62,   0, 62,  -44
 [State -2, SC HellClaw]
 type = ChangeState
 value = 1000
@@ -409,11 +408,11 @@ poweradd= 24
 sprpriority = 2
 
 [State 200, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [2, 4]
-clsn1default = 1
-clsn1[0] = 20, -100, 62, -68
-
+group = Clsn1
+index = 0
+rect = 20, -100, 62, -68
 [State 200, HitDef]
 type = HitDef
 trigger1 = !time
@@ -497,11 +496,11 @@ poweradd= 28
 sprpriority = 2
 
 [State 210, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [4, 7]
-clsn1default = 1
-clsn1[0] = 24, -112, 68, -48
-
+group = Clsn1
+index = 0
+rect = 24, -112, 68, -48
 [State 210, HitDef]
 type = HitDef
 trigger1 = !time
@@ -582,11 +581,11 @@ poweradd= 34
 sprpriority = 2
 
 [State 220, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [10, 13]
-clsn1default = 1
-clsn1[0] = 16, -142, 64, -26
-
+group = Clsn1
+index = 0
+rect = 16, -142, 64, -26
 [State 220, HitDef]
 type = HitDef
 trigger1 = !time
@@ -664,11 +663,11 @@ poweradd= 24
 sprpriority = 2
 
 [State 230, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [4, 6]
-clsn1default = 1
-clsn1[0] = 18, -44, 58, -8
-
+group = Clsn1
+index = 0
+rect = 18, -44, 58, -8
 [State 230, HitDef]
 type = HitDef
 trigger1 = !time
@@ -741,11 +740,11 @@ poweradd= 34
 sprpriority = 2
 
 [State 240, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [9, 12]
-clsn1default = 1
-clsn1[0] = 26, -112, 76, -38
-
+group = Clsn1
+index = 0
+rect = 26, -112, 76, -38
 [State 240, HitDef]
 type = HitDef
 trigger1 = !time
@@ -830,11 +829,11 @@ trigger1 = pos y < 0
 y = 0
 
 [State 250, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [13, 16]
-clsn1default = 1
-clsn1[0] = 18, -152, 62, -96
-
+group = Clsn1
+index = 0
+rect = 18, -152, 62, -96
 [State 250, HitDef]
 type = HitDef
 trigger1 = !time
@@ -909,11 +908,11 @@ poweradd= 28
 sprpriority = 2
 
 [State 260, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [6, 10]
-clsn1default = 1
-clsn1[0] = 28, -92, 96, -58
-
+group = Clsn1
+index = 0
+rect = 28, -92, 96, -58
 [State 260, HitDef]
 type = HitDef
 trigger1 = !time
@@ -983,11 +982,11 @@ poweradd= 22
 sprpriority = 2
 
 [State 400, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [2, 4]
-clsn1default = 1
-clsn1[0] = 18, -72, 54, -38
-
+group = Clsn1
+index = 0
+rect = 18, -72, 54, -38
 [State 400, HitDef]
 type = HitDef
 trigger1 = !time
@@ -1059,11 +1058,11 @@ poweradd= 26
 sprpriority = 2
 
 [State 410, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [5, 7]
-clsn1default = 1
-clsn1[0] = 20, -92, 60, -38
-
+group = Clsn1
+index = 0
+rect = 20, -92, 60, -38
 [State 410, HitDef]
 type = HitDef
 trigger1 = !time
@@ -1135,12 +1134,17 @@ poweradd= 30
 sprpriority = 2
 
 [State 420, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [7, 11]
-clsn1default = 1
-clsn1[0] =  8, -152, 46, -78
-clsn1[1] = 12, -130, 40, -80
-
+group = Clsn1
+index = 0
+rect = 8, -152, 46, -78
+[State 420, Attack box B]
+type = OverrideClsn
+trigger1 = time = [7, 11]
+group = Clsn1
+index = 1
+rect = 12, -130, 40, -80
 [State 420, HitDef]
 type = HitDef
 trigger1 = !time
@@ -1220,11 +1224,11 @@ poweradd= 20
 sprpriority = 2
 
 [State 600, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [4, 6]
-clsn1default = 1
-clsn1[0] = 14, -120, 52, -88
-
+group = Clsn1
+index = 0
+rect = 14, -120, 52, -88
 [State 600, HitDef]
 type = HitDef
 trigger1 = !time
@@ -1288,11 +1292,11 @@ poweradd= 24
 sprpriority = 2
 
 [State 610, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [6, 9]
-clsn1default = 1
-clsn1[0] = 16, -132, 58, -88
-
+group = Clsn1
+index = 0
+rect = 16, -132, 58, -88
 [State 610, HitDef]
 type = HitDef
 trigger1 = !time
@@ -1365,11 +1369,11 @@ poweradd= 28
 sprpriority = 2
 
 [State 620, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [7, 10]
-clsn1default = 1
-clsn1[0] =  8, -64, 58, -18
-
+group = Clsn1
+index = 0
+rect = 8, -64, 58, -18
 [State 620, HitDef]
 type = HitDef
 trigger1 = !time

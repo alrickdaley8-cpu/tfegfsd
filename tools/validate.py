@@ -168,6 +168,44 @@ def check_block_refs(blocks, actions, states, known_states):
                         err(f"Projectile {key} references missing anim {n}")
 
 
+VALID_SCTRLS = {s.lower() for s in [
+    "afterimage","afterimagetime","allpalfx","angleadd","angledraw","anglemul","angleset",
+    "appendtoclipboard","assertspecial","attackdist","attackmulset","bgpalfx",
+    "bindtoparent","bindtoroot","bindtotarget","changeanim","changeanim2","changestate",
+    "clearclipboard","ctrlset","defencemulset","destroyself","displaytoclipboard","envcolor",
+    "envshake","explod","explodbindtime","fallenvshake","forcefeedback","gamemakeanim",
+    "gravity","helper","hitadd","hitby","hitdef","hitfalldamage","hitfallset","hitfallvel",
+    "hitoverride","hitvelset","lifeadd","lifeset","makedust","modifyexplod","movehitreset",
+    "nothitby","null","offset","palfx","parentvaradd","parentvarset","pause","playerpush",
+    "playsnd","posadd","posfreeze","posset","poweradd","powerset","projectile","remappal",
+    "removeexplod","removetext","reversaldef","screenbound","selfstate","sndpan","sprpriority",
+    "statetypeset","stopsnd","superpause","targetbind","targetdrop","targetfacing",
+    "targetlifeadd","targetpoweradd","targetstate","targetveladd","targetvelset","trans",
+    "turn","varadd","varrandom","varrangeset","varset","veladd","velmul","velset","victoryquote",
+    "width","zoom",
+    "assertanalogvector","assertcommand","assertinput","camera","cameractrl","changemovelist","depth",
+    "dialogue","dizzypointsadd","dizzypointsset","dizzyset","gethitvarset","groundleveloffset",
+    "guardbreakset","guardpointsadd","guardpointsset","height","lifebaraction","loadfile",
+    "loadstate","mapadd","mapreset","mapset","matchrestart","modifybgctrl","modifybgctrl3d",
+    "modifybgm","modifyhitdef","modifyplayer","modifyprojectile","modifyreflection",
+    "modifyreversaldef","modifyshadow","modifysnd","modifystagebg","modifystagevar","modifytext",
+    "overrideclsn","parentmapadd","parentmapset","playbgm","printtoconsole","redlifeadd",
+    "redlifeset","remapsprite","rootmapadd","rootmapset","rootvaradd","rootvarset",
+    "roundtimeadd","roundtimeset","savefile","savestate","scoreadd","shaderset","shiftinput",
+    "storyboard","tagin","tagout","targetadd","targetdizzypointsadd","targetguardpointsadd",
+    "targetredlifeadd","targetscoreadd","teammapadd","teammapset","text","transformclsn",
+    "transformsprite","createplatform","modifybctrl","modifybctrl3d","modifystagebg","height","depth",
+    # legacy aliases that engine treats as type inside CNS triggers (not SCTRL) - no check
+]}
+
+def check_sctrl_types(blocks):
+    for typ, raw in blocks:
+        if typ == "?" or typ == "":
+            continue
+        if typ not in VALID_SCTRLS:
+            # allow case where typ is numeric? but we flagged
+            err(f"Invalid state controller type \"{typ}\" — not in IKEMEN scmap (would crash at load)")
+
 def check_sff():
     p = os.path.join(CHAR, "Saturn.sff")
     d = open(p, "rb").read()
@@ -235,6 +273,7 @@ def main():
           f"| sounds: {len(sounds)}")
 
     known = COMMON_STATES | states
+    check_sctrl_types(blocks)
     check_trigger_commands(blocks, cmd_names)
     check_sounds_refs(blocks, sounds)
     check_block_refs(blocks, actions, states, known)

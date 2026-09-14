@@ -280,11 +280,11 @@ sprpriority = 4
 ownpal = 1
 
 [State 1000, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [8, 11]
-clsn1default = 1
-clsn1[0] = 20, -120, 66, -40
-
+group = Clsn1
+index = 0
+rect = 20, -120, 66, -40
 [State 1000, HitDef]
 type = HitDef
 trigger1 = !time
@@ -325,12 +325,12 @@ sprpriority = 4
 ownpal = 1
 
 [State 1000, Awakened attack box]
-type = Clsn1
+type = OverrideClsn
 triggerall = var(20) > 0
 trigger1 = time = [14, 16]
-clsn1default = 1
-clsn1[0] = 22, -124, 70, -30
-
+group = Clsn1
+index = 0
+rect = 22, -124, 70, -30
 [State 1000, Awakened HitDef]
 type = HitDef
 triggerall = var(20) > 0
@@ -520,11 +520,11 @@ sprpriority = 4
 ownpal = 1
 
 [State 1100, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [16, 21]
-clsn1default = 1
-clsn1[0] = 18, -150, 66, -60
-
+group = Clsn1
+index = 0
+rect = 18, -150, 66, -60
 [State 1100, HitDef]
 type = HitDef
 trigger1 = !time
@@ -671,12 +671,17 @@ ownpal = 1
 scale = 1.2, 1.2
 
 [State 1200, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [6, 9]
-clsn1default = 1
-clsn1[0] = -28, -120, 28, -20
-clsn1[1] = 28, -110, 64, -30
-
+group = Clsn1
+index = 0
+rect = -28, -120, 28, -20
+[State 1200, Attack box B]
+type = OverrideClsn
+trigger1 = time = [6, 9]
+group = Clsn1
+index = 1
+rect = 28, -110, 64, -30
 [State 1200, HitDef]
 type = HitDef
 trigger1 = !time
@@ -755,11 +760,11 @@ ownpal = 1
 scale = 1.3, 1.3
 
 [State 1250, Attack box]
-type = Clsn1
+type = OverrideClsn
 trigger1 = time = [20, 25]
-clsn1default = 1
-clsn1[0] = 14, -160, 74, -20
-
+group = Clsn1
+index = 0
+rect = 14, -160, 74, -20
 [State 1250, HitDef]
 type = HitDef
 trigger1 = !time

@@ -223,6 +223,48 @@ if missing_anim:
     for a in sorted(missing_anim)[:10]: err(f"anim {a} ref missing in AIR")
 else: log(f"  anim refs: {len(anim_refs)} all in AIR (or 0)")
 
+# --- IKEMEN scmap validation --- 
+VALID_SCTRLS = {s.lower() for s in [
+    "afterimage","afterimagetime","allpalfx","angleadd","angledraw","anglemul","angleset",
+    "appendtoclipboard","assertspecial","attackdist","attackmulset","bgpalfx",
+    "bindtoparent","bindtoroot","bindtotarget","changeanim","changeanim2","changestate",
+    "clearclipboard","ctrlset","defencemulset","destroyself","displaytoclipboard","envcolor",
+    "envshake","explod","explodbindtime","fallenvshake","forcefeedback","gamemakeanim",
+    "gravity","helper","hitadd","hitby","hitdef","hitfalldamage","hitfallset","hitfallvel",
+    "hitoverride","hitvelset","lifeadd","lifeset","makedust","modifyexplod","movehitreset",
+    "nothitby","null","offset","palfx","parentvaradd","parentvarset","pause","playerpush",
+    "playsnd","posadd","posfreeze","posset","poweradd","powerset","projectile","remappal",
+    "removeexplod","removetext","reversaldef","screenbound","selfstate","sndpan","sprpriority",
+    "statetypeset","stopsnd","superpause","targetbind","targetdrop","targetfacing",
+    "targetlifeadd","targetpoweradd","targetstate","targetveladd","targetvelset","trans",
+    "turn","varadd","varrandom","varrangeset","varset","veladd","velmul","velset","victoryquote",
+    "width","zoom",
+    "assertanalogvector","assertcommand","assertinput","camera","cameractrl","changemovelist","depth",
+    "dialogue","dizzypointsadd","dizzypointsset","dizzyset","gethitvarset","groundleveloffset",
+    "guardbreakset","guardpointsadd","guardpointsset","height","lifebaraction","loadfile",
+    "loadstate","mapadd","mapreset","mapset","matchrestart","modifybgctrl","modifybgctrl3d",
+    "modifybgm","modifyhitdef","modifyplayer","modifyprojectile","modifyreflection",
+    "modifyreversaldef","modifyshadow","modifysnd","modifystagebg","modifystagevar","modifytext",
+    "overrideclsn","parentmapadd","parentmapset","playbgm","printtoconsole","redlifeadd",
+    "redlifeset","remapsprite","rootmapadd","rootmapset","rootvaradd","rootvarset",
+    "roundtimeadd","roundtimeset","savefile","savestate","scoreadd","shaderset","shiftinput",
+    "storyboard","tagin","tagout","targetadd","targetdizzypointsadd","targetguardpointsadd",
+    "targetredlifeadd","targetscoreadd","teammapadd","teammapset","text","transformclsn",
+    "transformsprite","createplatform",
+]}
+invalid_types=[]
+for blk in blocks[1:]:
+    m=re.search(r"type\s*=\s*(\w+)", blk, re.I)
+    if m:
+        t=m.group(1).lower()
+        if t not in VALID_SCTRLS:
+            invalid_types.append(t)
+if invalid_types:
+    for t in sorted(set(invalid_types)):
+        err(f"Invalid state controller type \"{t}\" — would crash IKEMEN (scmap check)")
+else:
+    log("  scmap: all state controller types valid (IKEMEN scmap check)")
+
 # sounds refs already checked
 
 log("\n"+"="*70)
