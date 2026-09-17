@@ -1,32 +1,19 @@
-# javac / Gradle output for 31705d1
+# javac / Gradle output for 7c832f0
 
 ## counts by message
-      6 cannot find symbol
-      3 method does not override or implement a method from a supertype
-      1 onBreak(World,BlockPos,BlockState,PlayerEntity) in NukeBlock cannot override onBreak(World,BlockPos,BlockState,PlayerEntity) in Block
+      2 local variables referenced from a lambda expression must be final or effectively final
 
-## all error sites with their symbol and location lines
-src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:121: error: cannot find symbol
-  symbol:   method next()
-  location: interface VertexConsumer
-src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:259: error: cannot find symbol
-  symbol:   method next()
-  location: interface VertexConsumer
-src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:262: error: cannot find symbol
-  symbol:   method next()
-  location: interface VertexConsumer
-src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:265: error: cannot find symbol
-  symbol:   method next()
-  location: interface VertexConsumer
-src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:268: error: cannot find symbol
-  symbol:   method next()
-  location: interface VertexConsumer
-src/main/java/com/doomsday/nukes/block/NukeBlock.java:226: error: method does not override or implement a method from a supertype
-src/main/java/com/doomsday/nukes/block/NukeBlock.java:272: error: onBreak(World,BlockPos,BlockState,PlayerEntity) in NukeBlock cannot override onBreak(World,BlockPos,BlockState,PlayerEntity) in Block
-src/main/java/com/doomsday/nukes/block/NukeBlock.java:271: error: method does not override or implement a method from a supertype
-src/main/java/com/doomsday/nukes/item/NukeItem.java:50: error: method does not override or implement a method from a supertype
-src/main/java/com/doomsday/nukes/item/NukeItem.java:55: error: cannot find symbol
-  symbol: method placeBlock(ItemPlacementContext,BlockState,BlockPos,BlockEntity)
+## all error sites, six lines deep (javac's reason lines follow the error)
+src/main/java/com/doomsday/nukes/command/DoomsdayCommands.java:299: error: local variables referenced from a lambda expression must be final or effectively final
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.emp", (int) radius, ticks / 20), false);
+		                                                                          ^
+src/main/java/com/doomsday/nukes/command/DoomsdayCommands.java:369: error: local variables referenced from a lambda expression must be final or effectively final
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.quality", target.name()), false);
+		                                                                        ^
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 errors
+
 
 ## gradle failure block
 * What went wrong:
