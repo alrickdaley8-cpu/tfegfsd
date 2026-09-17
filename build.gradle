@@ -1,4 +1,9 @@
 plugins {
+	// Loom 1.7.x is the line that knows about MC 1.21/1.21.1 yarn mappings and run configs. The
+	// version comes from gradle.properties so a pin bump is a one-line diff, and the plugin is
+	// applied *here* rather than in settings.gradle: see the note there for what that mistake looks
+	// like in a failure log.
+	id 'fabric-loom' version "${loom_version}"
 	id 'eclipse'
 	id 'idea'
 }

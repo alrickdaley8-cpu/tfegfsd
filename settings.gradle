@@ -9,9 +9,10 @@ pluginManagement {
 	}
 }
 
-plugins {
-	// Loom 1.7.x is the line used for MC 1.21 / 1.21.1 mappings + run configs.
-	id 'fabric-loom' version '1.7-SNAPSHOT'
-}
+// The loom plugin is applied in build.gradle's plugins block, not here. A plugins {} block in
+// settings.gradle resolves and applies the plugin to the *Settings* object, which puts it on the
+// build's classpath but leaves the root project without the minecraft/mappings configurations, the
+// run tasks — and, as this project discovered, without `base`, so the first thing in build.gradle
+// that touches a Java-convention extension fails with "Could not find method base()".
 
 rootProject.name = 'doomsday-nukes'
