@@ -27,6 +27,12 @@ public class VitrifiedSandBlock extends Block {
 	}
 
 	@Override
+	protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+		// Fresh glass crust lets its neighbours light each other through it.
+		return true;
+	}
+
+	@Override
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		// 1.0 = fully lit ambient term. Fresh glass does not occlude its neighbours.
 		return 1.0F;

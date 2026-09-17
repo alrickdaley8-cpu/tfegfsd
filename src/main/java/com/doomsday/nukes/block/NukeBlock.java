@@ -159,6 +159,14 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		if (!state.isOf(newState.getBlock()) && !world.isClient) {
 			NukeBlockEntity be = find(world, pos);
 			if (be != null) {
+				// A device that stops existing stops being armed. This is onStateReplaced rather
+				// than onBreak on purpose: the same cleanup has to happen when the crater takes
+				// the block, when water fills it and when a piston moves it, and only the player's
+				// pickaxe would have seen a break hook. The dropped item comes from the loot table,
+				// so it can never carry a live timer into an inventory.
+				if (world instanceof ServerWorld server) {
+					be.disarmSilently(server);
+				}
 				// Drop the panic registration; the manager holds weak references and would
 				// otherwise keep a dead entity alive until its next sweep.
 				be.onRemovedFromWorld();
@@ -225,7 +233,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
-							 Hand hand, BlockHitResult hit) {
+							 BlockHitResult hit) {
 		NukeBlockEntity be = find(world, pos);
 
 		if (world.isClient) {
@@ -251,7 +259,8 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 			return ActionResult.PASS;
 		}
 
-		if (player.getStackInHand(hand).getItem() instanceof RemoteDetonatorItem) {
+		if (player.getMainHandStack().getItem() instanceof RemoteDetonatorItem
+				|| player.getOffHandStack().getItem() instanceof RemoteDetonatorItem) {
 			// The only way to acquire a link is to touch the device with the detonator.
 			RemoteDetonatorItem.handleDeviceUse(server, player, pos);
 			return ActionResult.SUCCESS;
@@ -266,19 +275,6 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		// Right-click without shift just confirms; the control panel is client-opened above and
 		// every action inside it round-trips through a validated C2S packet.
 		return ActionResult.SUCCESS;
-	}
-
-	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && Boolean.TRUE.equals(state.get(ARMED)) && world instanceof ServerWorld server) {
-			NukeBlockEntity be = find(world, pos);
-			if (be != null) {
-				// Breaking a live device disarms it. The dropped item is generated from the loot
-				// table, so it can never carry a live timer into an inventory.
-				be.disarmSilently(server);
-			}
-		}
-		super.onBreak(world, pos, state, player);
 	}
 
 	// ———————————————————————————————————————————————————— countdown

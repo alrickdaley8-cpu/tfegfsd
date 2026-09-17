@@ -9,7 +9,6 @@ import com.doomsday.nukes.util.DText;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -47,12 +46,16 @@ public class NukeItem extends BlockItem {
 		return preset;
 	}
 
+	/**
+	 * The place-success hook in 1.21.1 is {@code postPlacement} — {@code BlockItem} no longer
+	 * exposes a {@code placeBlock} override point, and this one already runs only when the state
+	 * actually went into the world, which is exactly the condition the thud and the log line need.
+	 */
 	@Override
-	protected boolean placeBlock(ItemPlacementContext ctx, BlockState state, BlockPos pos,
-								  net.minecraft.block.entity.BlockEntity be) {
-		// 1.21.1 dropped the World parameter: the placement context carries it.
-		net.minecraft.world.World world = ctx.getWorld();
-		boolean placed = super.placeBlock(ctx, state, pos, be);
+	protected boolean postPlacement(BlockPos pos, net.minecraft.world.World world,
+									net.minecraft.entity.player.PlayerEntity player, ItemStack stack,
+									BlockState state) {
+		boolean placed = super.postPlacement(pos, world, player, stack, state);
 		if (placed && !world.isClient) {
 			world.playSound(null, pos, SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS,
 				0.7F, 0.55F);

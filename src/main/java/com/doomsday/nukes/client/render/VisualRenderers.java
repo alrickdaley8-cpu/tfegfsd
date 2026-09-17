@@ -20,6 +20,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -90,8 +91,6 @@ public final class VisualRenderers {
 		private final VertexConsumer vertex;
 
 		Quads(MatrixStack stack, VertexConsumer vertex) {
-			// One pose, not two matrices: 1.21.1's VertexConsumer takes the MatrixStack.Entry for
-			// both the position and the normal, which is exactly the pair it needs.
 			this.pose = stack.peek();
 			this.vertex = vertex;
 		}
@@ -112,13 +111,28 @@ public final class VisualRenderers {
 
 		private void vertex(float x, float y, float z, float u, float v,
 							 int r, int g, int b, int a) {
-			vertex.vertex(pose, x, y, z)
-				.color(r, g, b, a)
-				.texture(u, v)
-				.overlay(OverlayTexture.DEFAULT_UV)
-				.light(FULL_LIGHT)
-				.normal(pose, 0.0F, 0.0F, 1.0F)
-				.next();
+			emit(vertex, pose, x, y, z, r, g, b, a, u, v, FULL_LIGHT, 0.0F, 0.0F, 1.0F);
+		}
+
+		/**
+		 * One call per vertex. 1.21.1's VertexConsumer has no {@code next()} any more: the bulk
+		 * {@code vertex(x, y, z, colour, u, v, overlay, light, nx, ny, nz)} writes every element of
+		 * the current vertex and then starts the next one — which is also why the pose has to be
+		 * applied here, since the bulk form is handed model-space numbers rather than a matrix.
+		 *
+		 * <p>Doing it in one call also sidesteps the element-order rule of the fluent setters (the
+		 * consumer insists they arrive in the order its {@link RenderLayer}'s format declares), so
+		 * a layer swap cannot turn a render pass into an {@code IllegalStateException}.</p>
+		 */
+		static void emit(VertexConsumer out, MatrixStack.Entry pose, float x, float y, float z,
+				int r, int g, int b, int a, float u, float v, int light,
+				float nx, float ny, float nz) {
+			Vector3f p = new Vector3f(x, y, z);
+			pose.getPositionMatrix().transformPosition(p);
+			Vector3f n = new Vector3f(nx, ny, nz);
+			pose.getNormalMatrix().transform(n);
+			out.vertex(p.x(), p.y(), p.z(), (a << 24) | (r << 16) | (g << 8) | b, u, v,
+				OverlayTexture.DEFAULT_UV, light, n.x(), n.y(), n.z());
 		}
 	}
 
@@ -254,18 +268,14 @@ public final class VisualRenderers {
 					float z1 = (float) Math.sin(a1);
 					// Bottom edge on the inner radius, top edge on the outer: the slant is what
 					// makes the band read as a wall leaning away from the blast.
-					vertex.vertex(pose, x0 * i, -height, z0 * i).color(226, 238, 250, ringAlpha)
-						.texture(0.0F, 1.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(pose, x0, 0.0F, z0).next();
-					vertex.vertex(pose, x1 * i, -height, z1 * i).color(226, 238, 250, ringAlpha)
-						.texture(1.0F, 1.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(pose, x1, 0.0F, z1).next();
-					vertex.vertex(pose, x1 * o, 0.0F, z1 * o).color(255, 255, 255, ringAlpha / 2)
-						.texture(1.0F, 0.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(pose, x1, 0.0F, z1).next();
-					vertex.vertex(pose, x0 * o, 0.0F, z0 * o).color(255, 255, 255, ringAlpha / 2)
-						.texture(0.0F, 0.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(pose, x0, 0.0F, z0).next();
+					Quads.emit(vertex, pose, x0 * i, -height, z0 * i, 226, 238, 250, ringAlpha,
+						0.0F, 1.0F, light, x0, 0.0F, z0);
+					Quads.emit(vertex, pose, x1 * i, -height, z1 * i, 226, 238, 250, ringAlpha,
+						1.0F, 1.0F, light, x1, 0.0F, z1);
+					Quads.emit(vertex, pose, x1 * o, 0.0F, z1 * o, 255, 255, 255,
+						ringAlpha / 2, 1.0F, 0.0F, light, x1, 0.0F, z1);
+					Quads.emit(vertex, pose, x0 * o, 0.0F, z0 * o, 255, 255, 255,
+						ringAlpha / 2, 0.0F, 0.0F, light, x0, 0.0F, z0);
 				}
 			}
 			stack.pop();

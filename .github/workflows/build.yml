@@ -119,9 +119,9 @@ jobs:
             grep -oE "error: [^ ]+( [^ ]+)*" /tmp/build.log | sed 's/error: //' \
               | sort | uniq -c | sort -rn | head -30
             echo
-            echo "## all error sites with their symbol and location lines"
-            grep -E "^/home/runner.*|^[[:space:]]+symbol:|^[[:space:]]+location:|^[[:space:]]+required:|^[[:space:]]+found:|error:|warning:" /tmp/build.log \
-              | sed 's|/home/runner/work/tfegfsd/tfegfsd/||' | head -400
+            echo "## all error sites, six lines deep (javac's reason lines follow the error)"
+            grep -A 6 "error:" /tmp/build.log \
+              | sed 's|/home/runner/work/tfegfsd/tfegfsd/||' | head -700
             echo
             echo "## gradle failure block"
             grep -A 12 "What went wrong" /tmp/build.log | head -60
