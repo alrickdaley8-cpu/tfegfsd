@@ -1,0 +1,263 @@
+# javac / Gradle output for ceb6e43
+
+## counts by message
+     64 cannot find symbol
+     22 wrong number of type arguments; required 2
+      4 method does not override or implement a method from a supertype
+      1 package ConfigManager does not exist
+      1 method addEntity in class ClientWorld cannot be applied to given types;
+      1 cannot infer type arguments for Type<>
+      1 StageChangeS2CPacket is not abstract and does not override abstract method getId() in CustomPayload
+      1 ShockwaveEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+      1 MushroomCloudEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+      1 FireballEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+      1 FalloutEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+      1 DetonationS2CPacket is not abstract and does not override abstract method getId() in CustomPayload
+      1 CloudAnchorEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+
+## all error sites with their symbol and location lines
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:69: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:76: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:22: error: cannot find symbol
+  symbol:   class Matrix3f
+  location: package net.minecraft.client.util.math
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:27: error: cannot find symbol
+  symbol:   class Matrix4f
+  location: package net.minecraft.util.math
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:91: error: cannot find symbol
+  symbol:   class Matrix4f
+  location: class Quads
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:92: error: cannot find symbol
+  symbol:   class Matrix3f
+  location: class Quads
+src/main/java/com/doomsday/nukes/network/packet/EmpSyncS2CPacket.java:22: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/EmpSyncS2CPacket.java:29: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/AftermathS2CPacket.java:21: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/AftermathS2CPacket.java:28: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceStateS2CPacket.java:24: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceStateS2CPacket.java:31: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/StageChangeS2CPacket.java:23: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/StageChangeS2CPacket.java:30: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceArmC2SPacket.java:21: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceArmC2SPacket.java:28: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonatorFireC2SPacket.java:19: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonatorFireC2SPacket.java:26: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceDisarmC2SPacket.java:18: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DeviceDisarmC2SPacket.java:25: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/RadiationSyncS2CPacket.java:26: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/RadiationSyncS2CPacket.java:33: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonateNowC2SPacket.java:19: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonateNowC2SPacket.java:26: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonatorLinkC2SPacket.java:20: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/network/packet/DetonatorLinkC2SPacket.java:27: error: wrong number of type arguments; required 2
+src/main/java/com/doomsday/nukes/world/EMPManager.java:17: error: cannot find symbol
+  symbol:   class MutablePos
+  location: package net.minecraft.util.math
+src/main/java/com/doomsday/nukes/world/TerrainWorkQueue.java:8: error: cannot find symbol
+  symbol:   class MutablePos
+  location: package net.minecraft.util.math
+src/main/java/com/doomsday/nukes/world/CraterGenerator.java:16: error: cannot find symbol
+  symbol:   class MutablePos
+  location: package net.minecraft.util.math
+src/main/java/com/doomsday/nukes/world/CraterGenerator.java:205: error: cannot find symbol
+  symbol:   class MutablePos
+  location: class CraterGenerator
+src/main/java/com/doomsday/nukes/world/CraterGenerator.java:205: error: cannot find symbol
+  symbol:   class MutablePos
+  location: class CraterGenerator
+src/main/java/com/doomsday/nukes/detonation/DetonationTimeline.java:49: error: package ConfigManager does not exist
+src/main/java/com/doomsday/nukes/block/CharredLogBlock.java:5: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/CharredLogBlock.java:29: error: cannot find symbol
+  symbol:   class BlockView
+  location: class CharredLogBlock
+src/main/java/com/doomsday/nukes/block/HeatedStoneBlock.java:7: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/HeatedStoneBlock.java:73: error: cannot find symbol
+  symbol:   class BlockView
+  location: class HeatedStoneBlock
+src/main/java/com/doomsday/nukes/block/VitrifiedSandBlock.java:5: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/VitrifiedSandBlock.java:30: error: cannot find symbol
+  symbol:   class BlockView
+  location: class VitrifiedSandBlock
+src/main/java/com/doomsday/nukes/block/VitrifiedSandBlock.java:36: error: cannot find symbol
+  symbol:   class BlockView
+  location: class VitrifiedSandBlock
+src/main/java/com/doomsday/nukes/block/ScorchedDirtBlock.java:5: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/ScorchedDirtBlock.java:28: error: cannot find symbol
+  symbol:   class BlockView
+  location: class ScorchedDirtBlock
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:6: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:7: error: cannot find symbol
+  symbol:   class RenderShape
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:98: error: cannot find symbol
+  symbol:   class RenderShape
+  location: class FlashLightBlock
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:103: error: cannot find symbol
+  symbol:   class BlockView
+  location: class FlashLightBlock
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:109: error: cannot find symbol
+  symbol:   class BlockView
+  location: class FlashLightBlock
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:115: error: cannot find symbol
+  symbol:   class BlockView
+  location: class FlashLightBlock
+src/main/java/com/doomsday/nukes/block/FlashLightBlock.java:127: error: cannot find symbol
+  symbol:   class BlockView
+  location: class FlashLightBlock
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:14: error: cannot find symbol
+  symbol:   class BlockView
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:16: error: cannot find symbol
+  symbol:   class RenderShape
+  location: package net.minecraft.block
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:129: error: cannot find symbol
+  symbol:   class RenderShape
+  location: class NukeBlock
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:134: error: cannot find symbol
+  symbol:   class BlockView
+  location: class NukeBlock
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:140: error: cannot find symbol
+  symbol:   class BlockView
+  location: class NukeBlock
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:146: error: cannot find symbol
+  symbol:   class BlockView
+  location: class NukeBlock
+src/main/java/com/doomsday/nukes/block/NukeBlock.java:151: error: cannot find symbol
+  symbol:   class BlockView
+  location: class NukeBlock
+src/main/java/com/doomsday/nukes/item/RemoteDetonatorItem.java:76: error: cannot find symbol
+  symbol:   class PlayerEntity
+  location: class RemoteDetonatorItem
+src/main/java/com/doomsday/nukes/item/RemoteDetonatorItem.java:97: error: cannot find symbol
+  symbol:   class PlayerEntity
+  location: class RemoteDetonatorItem
+src/main/java/com/doomsday/nukes/item/RemoteDetonatorItem.java:118: error: cannot find symbol
+  symbol:   class PlayerEntity
+  location: class RemoteDetonatorItem
+src/main/java/com/doomsday/nukes/item/NukeItem.java:40: error: cannot find symbol
+  symbol:   class Block
+  location: class NukeItem
+src/main/java/com/doomsday/nukes/entity/VisualEffectEntity.java:89: error: method does not override or implement a method from a supertype
+src/main/java/com/doomsday/nukes/entity/VisualEffectEntity.java:197: error: method does not override or implement a method from a supertype
+src/main/java/com/doomsday/nukes/entity/CloudAnchorEntity.java:29: error: CloudAnchorEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+src/main/java/com/doomsday/nukes/entity/CloudAnchorEntity.java:44: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/entity/ShockwaveEntity.java:23: error: ShockwaveEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+src/main/java/com/doomsday/nukes/entity/ShockwaveEntity.java:35: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/entity/FireballEntity.java:22: error: FireballEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+src/main/java/com/doomsday/nukes/entity/FireballEntity.java:43: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/entity/MushroomCloudEntity.java:39: error: MushroomCloudEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+src/main/java/com/doomsday/nukes/entity/MushroomCloudEntity.java:65: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/entity/FalloutEntity.java:26: error: FalloutEntity is not abstract and does not override abstract method writeCustomDataToNbt(NbtCompound) in Entity
+src/main/java/com/doomsday/nukes/entity/FalloutEntity.java:42: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/ClientDetonationState.java:106: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/ClientDetonationState.java:107: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/ClientDetonationState.java:129: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/GeigerDriver.java:98: error: cannot find symbol
+  symbol:   variable PLAYER
+  location: class SoundCategory
+src/main/java/com/doomsday/nukes/client/GeigerDriver.java:111: error: cannot find symbol
+  symbol:   variable PLAYER
+  location: class SoundCategory
+src/main/java/com/doomsday/nukes/client/gui/DoomsdayConfigScreen.java:200: error: cannot find symbol
+  symbol:   method append(MutableText)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/gui/DoomsdayConfigScreen.java:202: error: cannot find symbol
+  symbol:   method withStyle((s)->s.wit[...]olor))
+  location: class MutableText
+src/main/java/com/doomsday/nukes/client/gui/DoomsdayConfigScreen.java:212: error: cannot find symbol
+  symbol:   method formatted(Formatting)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/gui/NukeControlScreen.java:91: error: cannot find symbol
+  symbol:   method formatted(Formatting)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/gui/NukeControlScreen.java:153: error: cannot find symbol
+  symbol:   method type()
+  location: variable payload of type CustomPayload
+src/main/java/com/doomsday/nukes/client/gui/NukeControlScreen.java:181: error: cannot find symbol
+  symbol:   method formatted(Formatting)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/gui/NukeControlScreen.java:183: error: cannot find symbol
+  symbol:   method formatted(Formatting)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/gui/NukeControlScreen.java:197: error: cannot find symbol
+  symbol:   method formatted(Formatting)
+  location: interface Text
+src/main/java/com/doomsday/nukes/client/particle/AshPool.java:159: error: cannot find symbol
+  symbol:   method addAlwaysVisibleParticle(ParticleEffect,boolean,double,double,double,double,double,double)
+  location: variable world of type ClientWorld
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:90: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:99: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:108: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:114: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:124: error: cannot find symbol
+  symbol:   method ticks(float)
+  location: class ConfigManager
+src/main/java/com/doomsday/nukes/client/DoomsdayVisuals.java:172: error: method addEntity in class ClientWorld cannot be applied to given types;
+  required: Entity
+  found:    int,Entity
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:30: error: DetonationS2CPacket is not abstract and does not override abstract method getId() in CustomPayload
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:70: error: cannot infer type arguments for Type<>
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:73: error: cannot find symbol
+  symbol:   method uniform(Detonation[...]yload,Detonation[...]:read)
+  location: interface PacketCodec
+src/main/java/com/doomsday/nukes/network/packet/DetonationS2CPacket.java:75: error: method does not override or implement a method from a supertype
+src/main/java/com/doomsday/nukes/client/hud/DoomsdayHud.java:178: error: cannot find symbol
+  symbol:   method shallowCopy()
+  location: variable banner of type Text
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:162: error: method does not override or implement a method from a supertype
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:236: error: cannot find symbol
+  symbol:   class Matrix4f
+  location: class Shockwave
+src/main/java/com/doomsday/nukes/client/render/VisualRenderers.java:237: error: cannot find symbol
+  symbol:   class Matrix3f
+  location: class Shockwave
+src/main/java/com/doomsday/nukes/network/packet/StageChangeS2CPacket.java:17: error: StageChangeS2CPacket is not abstract and does not override abstract method getId() in CustomPayload
+
+## gradle failure block
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':compileJava'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:130)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:282)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:128)
