@@ -246,7 +246,7 @@ public final class Detonation {
 		if (c.verboseLogging) {
 			DoomsdayNukes.LOGGER.info("[detonation {}] stage '{}' at t={}s (origin {}, yield {} kt)",
 				id, stage.key(), String.format(java.util.Locale.ROOT, "%.2f", t),
-				originBlock.asString(), String.format(java.util.Locale.ROOT, "%.1f", yieldKt));
+				originBlock.toShortString(), String.format(java.util.Locale.ROOT, "%.1f", yieldKt));
 		}
 		if (stage == DetonationStage.FALLOUT && c.atmosphericAftermath && !aftermathSent) {
 			aftermathSent = true;
@@ -281,7 +281,7 @@ public final class Detonation {
 				if (player.isSpectator() || !player.isAlive()) {
 					continue;
 				}
-				double d = player.distanceTo(origin);
+				double d = player.getPos().distanceTo(origin);
 				if (d > radius) {
 					continue;
 				}
@@ -412,8 +412,7 @@ public final class Detonation {
 				double dmgScale = MathUtil.attenuation(flat, minD, Math.max(outer, radius * 1.6D), 2.0D);
 				float dmg = (float) (c.shockwaveDamage * dmgScale * Math.min(3.0D, yieldTerm));
 				if (dmg > 0.35F) {
-					e.damage(world.getDamageSources()
-						.source(net.minecraft.entity.damage.DamageTypes.EXPLOSION), dmg);
+					e.damage(world.getDamageSources().explosion(null, null), dmg);
 				}
 			}
 

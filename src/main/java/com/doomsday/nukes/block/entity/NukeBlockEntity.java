@@ -211,8 +211,10 @@ public class NukeBlockEntity extends BlockEntity {
 			}
 		}
 		if (isEmpSuppressed()) {
-			ModPackets.sendToPlayer(player, new com.doomsday.nukes.network.packet.DeviceStateS2CPacket(
-				getPos(), preset.ordinal(), false, 0, effectiveYieldKt(), true));
+			if (player instanceof ServerPlayerEntity sp) {
+				ModPackets.sendToPlayer(sp, new com.doomsday.nukes.network.packet.DeviceStateS2CPacket(
+					getPos(), preset.ordinal(), false, 0, effectiveYieldKt(), true));
+			}
 			return -1;
 		}
 		if (player.getAbilities() != null && player.getAbilities().creativeMode && player.isSneaking()) {
@@ -431,7 +433,7 @@ public class NukeBlockEntity extends BlockEntity {
 			return null;
 		}
 		BlockEntity be = world.getBlockEntity(pos);
-		if (be instanceof NukeBlockEntity nuke && ModBlockEntities.NUKE.isOf(be)) {
+		if (be instanceof NukeBlockEntity nuke) {
 			return nuke;
 		}
 		// Fall back to the block's own lookup so a client that loaded the chunk before the mod's

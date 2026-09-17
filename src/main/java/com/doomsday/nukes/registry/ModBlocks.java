@@ -79,7 +79,6 @@ public final class ModBlocks {
 		"flash_light",
 		new FlashLightBlock(AbstractBlock.Settings.create()
 			.strength(-1.0F, 3600000.0F)
-			.noOcclusion()
 			.nonOpaque()
 			.notSolid()
 			.noCollision()
@@ -90,6 +89,17 @@ public final class ModBlocks {
 			.luminance(state -> 15)));
 
 	private ModBlocks() {
+	}
+
+	/**
+	 * Every block is registered from this class's static initialisers, so the entrypoint's only
+	 * job is to force class initialisation in a defined order — the same shape ModItems and
+	 * ModEntities use, which keeps {@code DoomsdayNukes#init} readable.
+	 */
+	public static void register() {
+		if (STANDARD_NUKE == null) {
+			throw new IllegalStateException("Blocks did not finish registering");
+		}
 	}
 
 	private static NukeBlock device(NukePreset preset) {

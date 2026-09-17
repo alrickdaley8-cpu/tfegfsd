@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.PersistentState;
 
 /**
@@ -61,12 +62,20 @@ public final class DoomsdayWorldData extends PersistentState {
 
 	// ———————————————————————————————————————————————————— access
 
+	/**
+	 * 1.21.1 hands {@code PersistentStateManager} an explicit {@code Type}: a no-data supplier for
+	 * a fresh world, a reader for the stored compound, and a datafixer key. This mod's schema has
+	 * never changed, so there is nothing to migrate and the third component is null — which is
+	 * exactly what vanilla's own non-fixed-owned states do.
+	 */
+	public static final PersistentState.Type<DoomsdayWorldData> TYPE =
+		new PersistentState.Type<>(DoomsdayWorldData::new, DoomsdayWorldData::load, null);
+
 	public static DoomsdayWorldData get(ServerWorld world) {
-		return world.getPersistentStateManager()
-			.getOrCreate(DoomsdayWorldData::load, DATA_ID);
+		return world.getPersistentStateManager().getOrCreate(TYPE, DATA_ID);
 	}
 
-	public static DoomsdayWorldData load(NbtCompound nbt) {
+	public static DoomsdayWorldData load(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
 		DoomsdayWorldData data = new DoomsdayWorldData();
 		if (nbt == null) {
 			return data;
@@ -105,7 +114,7 @@ public final class DoomsdayWorldData extends PersistentState {
 	}
 
 	@Override
-	public void writeNbt(NbtCompound nbt) {
+	public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
 		NbtList terrain = new NbtList();
 		for (Long2ObjectMap.Entry<long[]> entry : pendingTerrain.long2ObjectEntrySet()) {
 			NbtCompound e = new NbtCompound();
@@ -129,6 +138,7 @@ public final class DoomsdayWorldData extends PersistentState {
 			}
 		}
 		nbt.put("Contamination", cont);
+		return nbt;
 	}
 
 	// —————————————————————————————————————————————— deferred terrain

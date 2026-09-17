@@ -19,7 +19,7 @@ public record DeviceDisarmC2SPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("device_disarm"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceDisarmC2SPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(DeviceDisarmC2SPacket::writePayload,
 			DeviceDisarmC2SPacket::read);
 
 	@Override

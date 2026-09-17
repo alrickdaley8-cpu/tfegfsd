@@ -112,7 +112,7 @@ public final class DoomsdayNukes implements ModInitializer {
 				RadiationManager.onJoin(player);
 			});
 		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT
-			.register((handler) -> RadiationManager.onDisconnect(handler.getPlayer().getUuid()));
+			.register((handler, server) -> RadiationManager.onDisconnect(handler.getPlayer().getUuid()));
 
 		LOGGER.info("{} {} initialised (Fabric / MC 1.21.1). {} detonation presets loaded.",
 			MOD_NAME, version(), com.doomsday.nukes.detonation.NukePreset.values().length);

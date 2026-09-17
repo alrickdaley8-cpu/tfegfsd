@@ -23,7 +23,7 @@ public record EmpSyncS2CPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("emp_sync"));
 
 	public static final PacketCodec<RegistryByteBuf, EmpSyncS2CPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(EmpSyncS2CPacket::writePayload,
 			EmpSyncS2CPacket::read);
 
 	@Override

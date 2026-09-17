@@ -150,8 +150,8 @@ public final class DoomsdayCommands {
 		DoomsdayNukes.LOGGER.info("[command] {} detonating {} at {}", player.getName().getString(),
 			preset.name(), BlockPos.ofFloored(origin).toShortString());
 		DoomsdayNukes.detonations().detonate(world, origin, BlockPos.ofFloored(origin), preset);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.detonated",
-			DText.deviceName(preset)));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.detonated",
+			DText.deviceName(preset)), false);
 		return 1;
 	}
 
@@ -176,7 +176,7 @@ public final class DoomsdayCommands {
 			return 0;
 		}
 		int applied = be.requestArm(world, player, seconds);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.armed", applied));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.armed", applied), false);
 		return applied > 0 ? 1 : 0;
 	}
 
@@ -198,7 +198,7 @@ public final class DoomsdayCommands {
 		// a preview match the real thing after a config edit.
 		ModPackets.sendToAll(world, new StageChangeS2CPacket(-Math.abs(stage.index() + 1),
 			stage.index(), 0.0F, origin));
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.preview", stage.key()));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.preview", stage.key()), false);
 		return 1;
 	}
 
@@ -212,9 +212,9 @@ public final class DoomsdayCommands {
 		ServerPlayerEntity player = ctx.getSource().getPlayer();
 		int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
 		int applied = be.requestArm(player.getServerWorld(), player, seconds);
-		ctx.getSource().sendFeedback(applied > 0
+		ctx.getSource().sendFeedback(() -> applied > 0
 			? DText.of("command.doomsday.armed", applied)
-			: DText.of("command.doomsday.arm_refused"));
+			: DText.of("command.doomsday.arm_refused"), false);
 		return applied > 0 ? 1 : 0;
 	}
 
@@ -225,8 +225,8 @@ public final class DoomsdayCommands {
 		}
 		ServerPlayerEntity player = ctx.getSource().getPlayer();
 		boolean ok = be.requestDisarm(player.getServerWorld(), player);
-		ctx.getSource().sendFeedback(DText.of(ok
-			? "command.doomsday.disarmed" : "command.doomsday.nothing_armed"));
+		ctx.getSource().sendFeedback(() -> DText.of(ok
+			? "command.doomsday.disarmed" : "command.doomsday.nothing_armed"), false);
 		return ok ? 1 : 0;
 	}
 
@@ -274,11 +274,11 @@ public final class DoomsdayCommands {
 		java.util.List<String> lines = manager == null ? java.util.List.of()
 			: manager.describeArmedDevices();
 		if (lines.isEmpty()) {
-			ctx.getSource().sendFeedback(DText.of("command.doomsday.no_devices_armed"));
+			ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.no_devices_armed"), false);
 			return 0;
 		}
 		for (String line : lines) {
-			ctx.getSource().sendFeedback(Text.literal(line));
+			ctx.getSource().sendFeedback(() -> Text.literal(line), false);
 		}
 		return lines.size();
 	}
@@ -296,22 +296,22 @@ public final class DoomsdayCommands {
 		int ticks = Math.max(20, DoomsdayConfig.ticks(c.empSeconds));
 		radius = Math.min(radius, c.empMaxRadius * 8.0D);
 		EMPManager.addZone(player.getServerWorld(), player.getEyePos(), radius, ticks);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.emp", (int) radius, ticks / 20));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.emp", (int) radius, ticks / 20), false);
 		return 1;
 	}
 
 	private static int radiationStatus(CommandContext<ServerCommandSource> ctx) {
 		ServerPlayerEntity player = ctx.getSource().getPlayer();
 		if (player == null) {
-			ctx.getSource().sendFeedback(Text.literal(RadiationManager.describe()));
+			ctx.getSource().sendFeedback(() -> Text.literal(RadiationManager.describe()), false);
 			return 1;
 		}
 		float dose = RadiationManager.doseAt(player.getServerWorld(), player.getPos());
-		ctx.getSource().sendFeedback(Text.literal(String.format(java.util.Locale.ROOT,
+		ctx.getSource().sendFeedback(() -> Text.literal(String.format(java.util.Locale.ROOT,
 			"exposure %.1f / 100, dose %.3f, iodine %s, %s",
 			RadiationManager.exposureOf(player), dose,
 			RadiationManager.isIodineActive(player) ? "active" : "off",
-			RadiationManager.describe())));
+			RadiationManager.describe())), false);
 		return 1;
 	}
 
@@ -323,8 +323,8 @@ public final class DoomsdayCommands {
 		}
 		double amount = DoubleArgumentType.getDouble(ctx, "amount");
 		RadiationManager.addExposure(player, amount);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.radiation_now",
-			(int) Math.round(RadiationManager.exposureOf(player))));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.radiation_now",
+			(int) Math.round(RadiationManager.exposureOf(player))), false);
 		return 1;
 	}
 
@@ -335,7 +335,7 @@ public final class DoomsdayCommands {
 			return 0;
 		}
 		RadiationManager.clearExposure(player);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.radiation_cleared"));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.radiation_cleared"), false);
 		return 1;
 	}
 
@@ -347,7 +347,7 @@ public final class DoomsdayCommands {
 		}
 		int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
 		RadiationManager.takeIodine(player, seconds);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.iodine", seconds));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.iodine", seconds), false);
 		return 1;
 	}
 
@@ -366,27 +366,27 @@ public final class DoomsdayCommands {
 		DoomsdayConfig c = ConfigManager.get();
 		c.quality = target;
 		ConfigManager.applyAndSave(c);
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.quality", target.name()));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.quality", target.name()), false);
 		return 1;
 	}
 
 	private static int configDump(CommandContext<ServerCommandSource> ctx) {
 		for (String line : ConfigManager.describe().split("\n")) {
-			ctx.getSource().sendFeedback(Text.literal(line));
+			ctx.getSource().sendFeedback(() -> Text.literal(line), false);
 		}
-		ctx.getSource().sendFeedback(Text.literal(ModPackets.describePayloads()));
+		ctx.getSource().sendFeedback(() -> Text.literal(ModPackets.describePayloads()), false);
 		return 1;
 	}
 
 	private static int configReset(CommandContext<ServerCommandSource> ctx) {
 		ConfigManager.resetToDefaults();
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.config_reset"));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.config_reset"), false);
 		return 1;
 	}
 
 	private static int configSave(CommandContext<ServerCommandSource> ctx) {
 		ConfigManager.save();
-		ctx.getSource().sendFeedback(DText.of("command.doomsday.config_saved"));
+		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.config_saved"), false);
 		return 1;
 	}
 
@@ -405,7 +405,7 @@ public final class DoomsdayCommands {
 		sb.append(ConfigManager.get().quality).append(" quality, ")
 			.append(ConfigManager.get().maxVisualEntities).append(" visual entity cap");
 		for (String line : sb.toString().split("\n")) {
-			ctx.getSource().sendFeedback(Text.literal(line));
+			ctx.getSource().sendFeedback(() -> Text.literal(line), false);
 		}
 		return 1;
 	}

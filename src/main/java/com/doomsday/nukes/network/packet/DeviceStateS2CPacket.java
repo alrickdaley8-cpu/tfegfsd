@@ -25,7 +25,7 @@ public record DeviceStateS2CPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("device_state"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceStateS2CPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(DeviceStateS2CPacket::writePayload,
 			DeviceStateS2CPacket::read);
 
 	@Override

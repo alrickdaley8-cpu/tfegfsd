@@ -19,12 +19,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import org.joml.Matrix3f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.joml.Matrix4f;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
@@ -88,13 +86,13 @@ public final class VisualRenderers {
 
 	/** Camera-facing quad emitter bound to one matrix pose and one vertex buffer. */
 	private static final class Quads {
-		private final Matrix4f matrix;
-		private final Matrix3f normal;
+		private final MatrixStack.Entry pose;
 		private final VertexConsumer vertex;
 
 		Quads(MatrixStack stack, VertexConsumer vertex) {
-			this.matrix = stack.peek().getPositionMatrix();
-			this.normal = stack.peek().getNormalMatrix();
+			// One pose, not two matrices: 1.21.1's VertexConsumer takes the MatrixStack.Entry for
+			// both the position and the normal, which is exactly the pair it needs.
+			this.pose = stack.peek();
 			this.vertex = vertex;
 		}
 
@@ -114,12 +112,12 @@ public final class VisualRenderers {
 
 		private void vertex(float x, float y, float z, float u, float v,
 							 int r, int g, int b, int a) {
-			vertex.vertex(matrix, x, y, z)
+			vertex.vertex(pose, x, y, z)
 				.color(r, g, b, a)
 				.texture(u, v)
 				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(FULL_LIGHT)
-				.normal(normal, 0.0F, 0.0F, 1.0F)
+				.normal(pose, 0.0F, 0.0F, 1.0F)
 				.next();
 		}
 	}
@@ -234,8 +232,7 @@ public final class VisualRenderers {
 			float outer = (float) front;
 			float height = (float) (6.0D + (outer - inner) * 0.55D);
 			stack.push();
-			Matrix4f matrix = stack.peek().getPositionMatrix();
-			Matrix3f normals = stack.peek().getNormalMatrix();
+			MatrixStack.Entry pose = stack.peek();
 			VertexConsumer vertex = consumers.getBuffer(RenderLayer.getEntityTranslucent(GLOW));
 			// The wall is a vertical band between inner and outer radius, one quad per segment. A
 			// ring of 48 segments is the cheapest shape that still reads as a *front* rather than a
@@ -257,18 +254,18 @@ public final class VisualRenderers {
 					float z1 = (float) Math.sin(a1);
 					// Bottom edge on the inner radius, top edge on the outer: the slant is what
 					// makes the band read as a wall leaning away from the blast.
-					vertex.vertex(matrix, x0 * i, -height, z0 * i).color(226, 238, 250, ringAlpha)
+					vertex.vertex(pose, x0 * i, -height, z0 * i).color(226, 238, 250, ringAlpha)
 						.texture(0.0F, 1.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(normals, x0, 0.0F, z0).next();
-					vertex.vertex(matrix, x1 * i, -height, z1 * i).color(226, 238, 250, ringAlpha)
+						.normal(pose, x0, 0.0F, z0).next();
+					vertex.vertex(pose, x1 * i, -height, z1 * i).color(226, 238, 250, ringAlpha)
 						.texture(1.0F, 1.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(normals, x1, 0.0F, z1).next();
-					vertex.vertex(matrix, x1 * o, 0.0F, z1 * o).color(255, 255, 255, ringAlpha / 2)
+						.normal(pose, x1, 0.0F, z1).next();
+					vertex.vertex(pose, x1 * o, 0.0F, z1 * o).color(255, 255, 255, ringAlpha / 2)
 						.texture(1.0F, 0.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(normals, x1, 0.0F, z1).next();
-					vertex.vertex(matrix, x0 * o, 0.0F, z0 * o).color(255, 255, 255, ringAlpha / 2)
+						.normal(pose, x1, 0.0F, z1).next();
+					vertex.vertex(pose, x0 * o, 0.0F, z0 * o).color(255, 255, 255, ringAlpha / 2)
 						.texture(0.0F, 0.0F).overlay(OverlayTexture.DEFAULT_UV).light(light)
-						.normal(normals, x0, 0.0F, z0).next();
+						.normal(pose, x0, 0.0F, z0).next();
 				}
 			}
 			stack.pop();

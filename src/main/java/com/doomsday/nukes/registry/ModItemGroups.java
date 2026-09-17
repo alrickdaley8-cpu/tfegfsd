@@ -20,7 +20,7 @@ public final class ModItemGroups {
 	public static final RegistryKey<ItemGroup> KEY =
 		RegistryKey.of(RegistryKeys.ITEM_GROUP, DoomsdayNukes.id("main"));
 
-	public static final ItemGroup TAB = Registry.register(Registries.CREATIVE_MODE_TAB, KEY,
+	public static final ItemGroup TAB = Registry.register(Registries.ITEM_GROUP, KEY,
 		FabricItemGroup.builder()
 			.icon(() -> new ItemStack(ModItems.STANDARD_NUKE))
 			.displayName(Text.translatable("itemGroup.doomsday.main"))
@@ -50,6 +50,6 @@ public final class ModItemGroups {
 
 	/** Exposed for the config screen's "open tab" button. */
 	public static Identifier id() {
-		return Registries.CREATIVE_MODE_TAB.getId(TAB);
+		return Registries.ITEM_GROUP.getId(TAB);
 	}
 }

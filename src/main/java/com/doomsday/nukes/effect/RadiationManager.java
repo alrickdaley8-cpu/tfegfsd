@@ -7,6 +7,7 @@ import com.doomsday.nukes.item.HazmatGear;
 import com.doomsday.nukes.network.ModPackets;
 import com.doomsday.nukes.network.packet.RadiationSyncS2CPacket;
 import com.doomsday.nukes.registry.ModStatusEffects;
+import com.doomsday.nukes.util.MathUtil;
 import com.doomsday.nukes.util.SpatialUtil;
 import com.doomsday.nukes.world.DoomsdayWorldData;
 import it.unimi.dsi.fastutil.longs.Long2FloatMap;
@@ -308,8 +309,59 @@ public final class RadiationManager {
 		if (!(world instanceof ServerWorld sw) || pos == null) {
 			return 0.0F;
 		}
-		return DoomsdayWorldData.get(sw).contamination(pos.getBlockX() >> 4, pos.getBlockZ() >> 4,
-			sw.getTime());
+		return DoomsdayWorldData.get(sw).contamination((int) Math.floor(pos.x) >> 4,
+			(int) Math.floor(pos.z) >> 4, sw.getTime());
+	}
+
+	/**
+	 * Stamps the fallout field into the world after a detonation: one dose value per chunk inside
+	 * the contaminated radius, attenuated by distance and scaled by yield. Called once, from the
+	 * FALLOUT stage — the field is the state of record, players merely integrate over it.
+	 *
+	 * <p>The expiry is a backstop, not the mechanism: {@link #tick} decays the field every
+	 * {@code DECAY_INTERVAL_TICKS}, so an unvisited chunk is cleaned up on the decay pass while a
+	 * visited one fades smoothly.</p>
+	 *
+	 * @return how many chunks actually received a dose
+	 */
+	public static int contaminate(ServerWorld world, Vec3d origin,
+			ConfigManager.ResolvedTuning tuning, DoomsdayConfig c) {
+		if (world == null || origin == null || !c.radiationEnabled) {
+			return 0;
+		}
+		double radius = (Math.max(16.0D, tuning.craterRadius() * 1.42D) + c.falloutSpreadBlocks)
+			* MathUtil.clamp(c.contaminationRadiusMultiplier, 0.05D, 8.0D);
+		long ttlTicks = (long) (1200.0D * MathUtil.clamp(tuning.radiationSeconds() / 3.0D,
+			60.0D, 1440.0D));
+		long expiry = world.getTime() + Math.max(20L,
+			(long) (ttlTicks * Math.max(0.1D, c.radiationDurationMultiplier)));
+		DoomsdayWorldData data = DoomsdayWorldData.get(world);
+		int centerChunkX = (int) Math.floor(origin.x) >> 4;
+		int centerChunkZ = (int) Math.floor(origin.z) >> 4;
+		int span = Math.max(1, MathHelper.ceil(radius / 16.0D));
+		float doseScale = (float) (MathUtil.clamp(tuning.yieldKt() / 20.0D, 0.25D, 12.0D)
+			* Math.max(0.0D, c.radiationIntensity));
+		int touched = 0;
+		for (int dz = -span; dz <= span; dz++) {
+			for (int dx = -span; dx <= span; dx++) {
+				double d = Math.hypot(dx * 16.0D, dz * 16.0D);
+				if (d > radius) {
+					continue;
+				}
+				float atten = (float) MathUtil.attenuation(d, radius * 0.2D, radius, 1.35D);
+				if (atten <= 0.02F) {
+					continue;
+				}
+				data.addContamination(centerChunkX + dx, centerChunkZ + dz,
+					Math.min(1.0F, atten * doseScale * 0.4F), expiry);
+				touched++;
+			}
+		}
+		if (c.verboseLogging) {
+			DoomsdayNukes.LOGGER.info("[radiation] {} chunks contaminated over a {} block radius",
+				touched, String.format(java.util.Locale.ROOT, "%.0f", radius));
+		}
+		return touched;
 	}
 
 	/** Iodine protection: a dose multiplier in 0..1, where 1.0 means "no protection active". */
@@ -462,7 +514,7 @@ public final class RadiationManager {
 		if (ModStatusEffects.RADIATION == null) {
 			return null;
 		}
-		cached = Registries.STATUS_EFFECT.getEntry(ModStatusEffects.RADIATION).orElse(null);
+		cached = Registries.STATUS_EFFECT.getEntry(ModStatusEffects.RADIATION);
 		radiationEntry = cached;
 		return cached;
 	}

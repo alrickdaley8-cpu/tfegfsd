@@ -27,7 +27,7 @@ public record RadiationSyncS2CPacket(long[] chunkKeys, float[] doses) implements
 		new CustomPayload.Id<>(DoomsdayNukes.id("radiation_sync"));
 
 	public static final PacketCodec<RegistryByteBuf, RadiationSyncS2CPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(RadiationSyncS2CPacket::writePayload,
 			RadiationSyncS2CPacket::read);
 
 	@Override

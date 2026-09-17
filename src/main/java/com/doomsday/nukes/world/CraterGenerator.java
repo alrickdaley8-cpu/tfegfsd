@@ -247,7 +247,12 @@ public final class CraterGenerator {
 	}
 
 	static boolean isGlass(BlockState state) {
-		return state.getBlock() instanceof net.minecraft.block.GlassBlock || state.isOf(Blocks.GLASS_PANE);
+		// There is no GlassBlock class in 1.21.1 (glass is a plain Block with a transparent
+		// model), so the shatter list is by identity — including our own vitrified sand, which is
+		// what a crater floor is actually made of and must break like glass does.
+		return state.isOf(Blocks.GLASS) || state.isOf(Blocks.GLASS_PANE)
+			|| state.isOf(Blocks.TINTED_GLASS)
+			|| state.isOf(ModBlocks.VITRIFIED_SAND);
 	}
 
 	/**

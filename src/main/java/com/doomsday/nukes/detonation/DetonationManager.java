@@ -318,9 +318,9 @@ public final class DetonationManager {
 			(float) c.flashDistance,
 			(float) c.flashWhiteoutSeconds,
 			(float) c.flashDesaturateSeconds,
-			c.flashEnabled, c.cloudEnabled, c.falloutEnabled, c.atmosphericAftermath,
 			(float) c.skyDarkness,
-			(float) c.cameraShakeSeconds
+			(float) c.cameraShakeSeconds,
+			c.flashEnabled, c.cloudEnabled, c.falloutEnabled, c.atmosphericAftermath
 		);
 		if (only != null) {
 			ModPackets.sendToPlayer(only, payload);

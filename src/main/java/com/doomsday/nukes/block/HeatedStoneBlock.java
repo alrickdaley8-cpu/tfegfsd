@@ -40,11 +40,11 @@ public class HeatedStoneBlock extends Block {
 			return;
 		}
 		int life = Math.max(20, DoomsdayConfig.ticks(ConfigManager.get().heatedStoneSeconds));
-		((ServerWorld) world).createAndScheduleBlockTick(pos, this, life);
+		((ServerWorld) world).scheduleBlockTick(pos, this, life);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, ServerWorld world, BlockPos pos, Object tag) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		// Guard first: a stale tick for a block that has since been replaced must be ignored,
 		// which is cheaper and race-free compared with unscheduling on every replacement.
 		if (!world.getBlockState(pos).isOf(this)) {
@@ -59,12 +59,12 @@ public class HeatedStoneBlock extends Block {
 			return;
 		}
 		if (random.nextFloat() < 0.08F) {
-			world.addAlwaysVisibleParticle(ParticleTypes.LAVA,
+			world.addParticle(ParticleTypes.LAVA,
 				pos.getX() + 0.5D + random.nextDouble() - 0.5D, pos.getY() + 1.01D,
 				pos.getZ() + 0.5D + random.nextDouble() - 0.5D,
 				0.0D, 0.01D, 0.0D);
 		} else if (random.nextFloat() < 0.05F) {
-			world.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true,
+			world.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE,
 				pos.getX() + 0.5D, pos.getY() + 1.05D, pos.getZ() + 0.5D,
 				0.0D, 0.02D, 0.0D);
 		}

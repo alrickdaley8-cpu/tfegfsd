@@ -40,26 +40,26 @@ public class RadiationSicknessEffect extends StatusEffect {
 	}
 
 	@Override
-	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		DoomsdayConfig c = ConfigManager.get();
 		if (!c.radiationEnabled) {
-			return;
+			return false;
 		}
 		if (entity instanceof PlayerEntity player) {
 			if (player.isCreative() || player.isSpectator()) {
 				// Creative players are exempt by design: radiation is a survival pressure, and
 				// punishing a builder for walking through a crater is not a mechanic, it is noise.
-				return;
+				return false;
 			}
 			// Damage on the configured coarse interval only.
-			player.damage(player.getDamageSources().magic(
-				c.radiationDamagePerTick * (amplifier + 1)));
+			player.damage(player.getDamageSources().magic(),
+				c.radiationDamagePerTick * (amplifier + 1));
 			// Hunger drains a little faster the sicker you are.
 			player.getHungerManager().addExhaustion(0.2F + 0.15F * amplifier);
 		} else {
 			// Mobs/animals get the damage but not the hunger bookkeeping.
-			entity.damage(entity.getDamageSources().magic(
-				c.radiationDamagePerTick * (amplifier + 1)));
+			entity.damage(entity.getDamageSources().magic(),
+				c.radiationDamagePerTick * (amplifier + 1));
 		}
 
 		if (c.radiationAppliesVanillaDebuffs) {
@@ -76,6 +76,9 @@ public class RadiationSicknessEffect extends StatusEffect {
 				apply(entity, StatusEffects.BLINDNESS, 0, Math.max(20, tail / 2));
 			}
 		}
+		// True = "the entity was touched", which is what the caller uses to decide whether the
+		// effect needs a dirty-flag resend; the hunger term above always runs, so it is honest.
+		return true;
 	}
 
 	private static void apply(LivingEntity entity, net.minecraft.registry.entry.RegistryEntry<StatusEffect> type,
@@ -108,8 +111,7 @@ public class RadiationSicknessEffect extends StatusEffect {
 	 * a hot zone still kills you. This method exists so the HUD can state that difference plainly.
 	 */
 	public static boolean partiallyBlockedBy(LivingEntity entity) {
-		return entity instanceof net.minecraft.entity.player.PlayerEntity player
-			&& HazmatGear.protectionFactor(player) < 1.0D;
+		return HazmatGear.radiationMultiplier(entity) < 1.0D;
 	}
 
 }

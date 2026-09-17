@@ -20,7 +20,7 @@ public record DetonatorFireC2SPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("detonator_fire"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonatorFireC2SPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(DetonatorFireC2SPacket::writePayload,
 			DetonatorFireC2SPacket::read);
 
 	@Override

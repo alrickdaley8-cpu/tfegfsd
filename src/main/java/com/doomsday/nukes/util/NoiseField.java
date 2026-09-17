@@ -11,6 +11,9 @@ package com.doomsday.nukes.util;
  * per-vertex turbulence is done on the GPU.</p>
  */
 public final class NoiseField {
+	/** Guard for normalising fbm sums whose amplitude can round to zero. */
+	private static final float EPS = 1.0E-6F;
+
 	/** Lattice period. Power-of-two so masking replaces a modulo and tiles cleanly. */
 	private static final int PERIOD = 256;
 	private static final int MASK = PERIOD - 1;

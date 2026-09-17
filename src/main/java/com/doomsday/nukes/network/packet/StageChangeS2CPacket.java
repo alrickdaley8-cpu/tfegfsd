@@ -24,7 +24,7 @@ public record StageChangeS2CPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("stage_change"));
 
 	public static final PacketCodec<RegistryByteBuf, StageChangeS2CPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(StageChangeS2CPacket::writePayload,
 			StageChangeS2CPacket::read);
 
 	@Override

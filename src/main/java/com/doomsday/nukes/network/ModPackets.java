@@ -80,7 +80,8 @@ public final class ModPackets {
 				if (!reachable(player, payload.pos())) {
 					return;
 				}
-				NukeBlockEntity.requestArm(server, player, payload.pos(), payload.timerSeconds());
+				NukeBlockEntity.requestArm(player.getServerWorld(), player, payload.pos(),
+					payload.timerSeconds());
 			});
 
 		ServerPlayNetworking.registerGlobalReceiver(DeviceDisarmC2SPacket.ID,
@@ -89,7 +90,7 @@ public final class ModPackets {
 				if (!reachable(player, payload.pos())) {
 					return;
 				}
-				NukeBlockEntity.requestDisarm(server, player, payload.pos());
+				NukeBlockEntity.requestDisarm(player.getServerWorld(), player, payload.pos());
 			});
 
 		ServerPlayNetworking.registerGlobalReceiver(DetonatorLinkC2SPacket.ID,

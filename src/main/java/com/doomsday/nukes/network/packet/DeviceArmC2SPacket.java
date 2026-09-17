@@ -22,7 +22,7 @@ public record DeviceArmC2SPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("device_arm"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceArmC2SPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(DeviceArmC2SPacket::writePayload,
 			DeviceArmC2SPacket::read);
 
 	@Override

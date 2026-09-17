@@ -5,6 +5,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -41,7 +42,7 @@ public class HazmatGogglesItem extends ArmorItem {
 	public static final int TINT_RGB = 0x9ACD32;
 
 	public HazmatGogglesItem(Item.Settings settings) {
-		super(net.minecraft.registry.RegistryEntries.ArmorMaterials.LEATHER, ArmorItem.Type.HELMET,
+		super(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET,
 			settings.component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(TINT_RGB, false)));
 	}
 

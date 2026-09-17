@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import com.doomsday.nukes.util.StackData;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -88,7 +89,7 @@ public class RemoteDetonatorItem extends Item {
 			// packet itself: the integrated/server side still honours a direct use.
 			serverFire(sp, slot, cancel);
 		}
-		return ActionResult.SUCCESS;
+		return TypedActionResult.pass(stack);
 	}
 
 	/**
@@ -130,28 +131,23 @@ public class RemoteDetonatorItem extends Item {
 	// ———————————————————————————————————————————————————— link storage
 
 	private static void writeLink(ItemStack stack, ServerWorld world, BlockPos pos, int serial) {
-		NbtCompound root = stack.getOrCreateNbt();
 		NbtCompound link = new NbtCompound();
 		link.putString(NBT_DIM, world.getRegistryKey().getValue().toString());
 		link.putInt(NBT_X, pos.getX());
 		link.putInt(NBT_Y, pos.getY());
 		link.putInt(NBT_Z, pos.getZ());
 		link.putInt(NBT_SERIAL, serial);
-		root.put(NBT_LINK, link);
-		stack.setNbt(root);
+		StackData.edit(stack, nbt -> nbt.put(NBT_LINK, link));
 	}
 
 	public static void clearLink(ItemStack stack) {
-		NbtCompound root = stack.getNbt();
-		if (root != null) {
-			root.remove(NBT_LINK);
-		}
+		StackData.edit(stack, nbt -> nbt.remove(NBT_LINK));
 	}
 
 	/** @return the linked position, or null when the stack is not linked to anything */
 	public static BlockPos linkedPos(ItemStack stack) {
-		NbtCompound root = stack.getNbt();
-		if (root == null || !root.contains(NBT_LINK)) {
+		NbtCompound root = StackData.read(stack);
+		if (!root.contains(NBT_LINK)) {
 			return null;
 		}
 		NbtCompound link = root.getCompound(NBT_LINK);
@@ -159,16 +155,16 @@ public class RemoteDetonatorItem extends Item {
 	}
 
 	public static String linkedDimension(ItemStack stack) {
-		NbtCompound root = stack.getNbt();
-		if (root == null || !root.contains(NBT_LINK)) {
+		NbtCompound root = StackData.read(stack);
+		if (!root.contains(NBT_LINK)) {
 			return "";
 		}
 		return root.getCompound(NBT_LINK).getString(NBT_DIM);
 	}
 
 	private static int linkedSerial(ItemStack stack) {
-		NbtCompound root = stack.getNbt();
-		if (root == null || !root.contains(NBT_LINK)) {
+		NbtCompound root = StackData.read(stack);
+		if (!root.contains(NBT_LINK)) {
 			return -1;
 		}
 		return root.getCompound(NBT_LINK).getInt(NBT_SERIAL);

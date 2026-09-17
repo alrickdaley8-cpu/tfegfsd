@@ -49,8 +49,10 @@ public class NukeItem extends BlockItem {
 
 	@Override
 	protected boolean placeBlock(ItemPlacementContext ctx, BlockState state, BlockPos pos,
-								  net.minecraft.world.World world, net.minecraft.block.entity.BlockEntity be) {
-		boolean placed = super.placeBlock(ctx, state, pos, world, be);
+								  net.minecraft.block.entity.BlockEntity be) {
+		// 1.21.1 dropped the World parameter: the placement context carries it.
+		net.minecraft.world.World world = ctx.getWorld();
+		boolean placed = super.placeBlock(ctx, state, pos, be);
 		if (placed && !world.isClient) {
 			world.playSound(null, pos, SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS,
 				0.7F, 0.55F);

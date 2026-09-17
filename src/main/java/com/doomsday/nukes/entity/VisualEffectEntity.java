@@ -2,6 +2,7 @@ package com.doomsday.nukes.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -189,9 +190,15 @@ public abstract class VisualEffectEntity extends Entity {
 
 	// ———————————————————————————————————————————— vanilla hard-no-ops
 
-	// Neither hook has anything to do: these entities exist only on the client, so there is no
-	// server-side instance to save and no synced-data entry to replicate. They are overridden to
-	// say that out loud, because Entity declares both abstract.
+	// Synced data and custom NBT are both declared abstract on Entity and both are meaningless
+	// here: these entities exist only on the client, so there is nothing to replicate and nothing
+	// to save. The overrides say so instead of silently inheriting a crash.
+	@Override
+	protected void initDataTracker(DataTracker.Builder builder) {
+		// No entries: everything a renderer needs arrives in configure(), and a TrackedData entry
+		// would be bandwidth for a value no other side can act on.
+	}
+
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 	}

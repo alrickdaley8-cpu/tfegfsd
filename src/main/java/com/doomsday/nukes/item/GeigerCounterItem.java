@@ -3,6 +3,7 @@ package com.doomsday.nukes.item;
 import com.doomsday.nukes.config.ConfigManager;
 import com.doomsday.nukes.effect.RadiationManager;
 import com.doomsday.nukes.util.DText;
+import com.doomsday.nukes.util.StackData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,16 +55,16 @@ public class GeigerCounterItem extends Item {
 		if (world.isClient) {
 			// Predict the toggle so the needle and the ping are immediate; the server confirms
 			// within a tick and the value is authoritative for anything that matters.
-			boolean sweep = !stack.getOrCreateNbt().getBoolean(NBT_SWEEP);
-			stack.getOrCreateNbt().putBoolean(NBT_SWEEP, sweep);
+			boolean sweep = !StackData.getBoolean(stack, NBT_SWEEP);
+			StackData.edit(stack, nbt -> nbt.putBoolean(NBT_SWEEP, sweep));
 			// Local playback for the holder only: playSound on the entity, not the world, so the
 			// ping is not double-sent by the server's own broadcast.
 			user.playSound(com.doomsday.nukes.sound.ModSounds.GEIGER, 0.65F, sweep ? 1.9F : 1.35F);
 			return TypedActionResult.success(stack);
 		}
 		if (user instanceof ServerPlayerEntity sp) {
-			boolean sweep = !stack.getOrCreateNbt().getBoolean(NBT_SWEEP);
-			stack.getOrCreateNbt().putBoolean(NBT_SWEEP, sweep);
+			boolean sweep = !StackData.getBoolean(stack, NBT_SWEEP);
+			StackData.edit(stack, nbt -> nbt.putBoolean(NBT_SWEEP, sweep));
 			RadiationManager.setSweep(sp, sweep);
 			sp.sendMessage(DText.of(sweep
 				? "gui.doomsday.geiger.sweep_on" : "gui.doomsday.geiger.sweep_off"), true);
@@ -95,11 +96,11 @@ public class GeigerCounterItem extends Item {
 		}
 		ItemStack main = user.getMainHandStack();
 		if (main.getItem() instanceof GeigerCounterItem) {
-			return main.getOrCreateNbt().getBoolean(NBT_SWEEP);
+			return StackData.getBoolean(main, NBT_SWEEP);
 		}
 		ItemStack off = user.getOffHandStack();
 		if (off.getItem() instanceof GeigerCounterItem) {
-			return off.getOrCreateNbt().getBoolean(NBT_SWEEP);
+			return StackData.getBoolean(off, NBT_SWEEP);
 		}
 		return false;
 	}

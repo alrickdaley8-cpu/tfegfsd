@@ -70,7 +70,7 @@ public class IodineTabletItem extends Item {
 		double seconds = ConfigManager.get().iodineProtectionSeconds;
 		RadiationManager.takeIodine(player, seconds);
 		player.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!player.getAbilities().instantBuild) {
+		if (!player.getAbilities().allowModifyWorld) {
 			stack.decrement(1);
 		}
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EAT,

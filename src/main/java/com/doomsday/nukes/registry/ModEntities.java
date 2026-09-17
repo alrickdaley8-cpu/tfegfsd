@@ -34,7 +34,8 @@ public final class ModEntities {
 			.dimensions(1.0F, 1.0F)
 			.maxTrackingRange(32)
 			.trackingTickInterval(20)
-			.fireImmune()
+			// No fireImmune(): 1.21.1 dropped it from the builder, and these entities are never
+			// spawned server-side, so there is no damage source to be immune to in the first place.
 			.build("doomsday:fireball"));
 
 	public static final EntityType<ShockwaveEntity> SHOCKWAVE = register("shockwave",
@@ -42,7 +43,8 @@ public final class ModEntities {
 			.dimensions(1.0F, 1.0F)
 			.maxTrackingRange(32)
 			.trackingTickInterval(20)
-			.fireImmune()
+			// No fireImmune(): 1.21.1 dropped it from the builder, and these entities are never
+			// spawned server-side, so there is no damage source to be immune to in the first place.
 			.build("doomsday:shockwave"));
 
 	public static final EntityType<MushroomCloudEntity> MUSHROOM_CLOUD = register("mushroom_cloud",
@@ -50,7 +52,8 @@ public final class ModEntities {
 			.dimensions(1.0F, 1.0F)
 			.maxTrackingRange(64)
 			.trackingTickInterval(20)
-			.fireImmune()
+			// No fireImmune(): 1.21.1 dropped it from the builder, and these entities are never
+			// spawned server-side, so there is no damage source to be immune to in the first place.
 			.build("doomsday:mushroom_cloud"));
 
 	public static final EntityType<FalloutEntity> FALLOUT = register("fallout",
@@ -58,7 +61,8 @@ public final class ModEntities {
 			.dimensions(1.0F, 1.0F)
 			.maxTrackingRange(48)
 			.trackingTickInterval(20)
-			.fireImmune()
+			// No fireImmune(): 1.21.1 dropped it from the builder, and these entities are never
+			// spawned server-side, so there is no damage source to be immune to in the first place.
 			.build("doomsday:fallout"));
 
 	/**
@@ -71,7 +75,8 @@ public final class ModEntities {
 			.dimensions(0.01F, 0.01F)
 			.maxTrackingRange(64)
 			.trackingTickInterval(20)
-			.fireImmune()
+			// No fireImmune(): 1.21.1 dropped it from the builder, and these entities are never
+			// spawned server-side, so there is no damage source to be immune to in the first place.
 			.build("doomsday:cloud_anchor"));
 
 	private ModEntities() {

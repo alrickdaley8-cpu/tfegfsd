@@ -33,11 +33,6 @@ public class VitrifiedSandBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-		return true;
-	}
-
-	@Override
 	public void randomDisplayTick(BlockState state, net.minecraft.world.World world, BlockPos pos,
 								  Random random) {
 		// Occasional heat shimmer above the slag, but only client-side and only for the block
@@ -45,11 +40,11 @@ public class VitrifiedSandBlock extends Block {
 		// particle emitter.
 		if (random.nextFloat() < 0.012F && world.isClient
 			&& world.getBlockState(pos.up()).isAir()) {
-			world.addAlwaysVisibleParticle(net.minecraft.particle.ParticleTypes.CAMPFIRE_COSY_SMOKE,
+			world.addParticle(net.minecraft.particle.ParticleTypes.CAMPFIRE_COSY_SMOKE,
 				true, pos.getX() + 0.5D + random.nextFloat() * 0.4D - 0.2D,
 				pos.getY() + 1.02D, pos.getZ() + 0.5D + random.nextFloat() * 0.4D - 0.2D,
 				0.0D, 0.008D, 0.0D);
-			world.addAlwaysVisibleParticle(net.minecraft.particle.ParticleTypes.SMALL_EMBER,
+			world.addParticle(net.minecraft.particle.ParticleTypes.FLAME,
 				true, pos.getX() + 0.5D, pos.getY() + 1.01D, pos.getZ() + 0.5D,
 				0.0D, 0.01D, 0.0D);
 		}

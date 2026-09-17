@@ -21,7 +21,7 @@ public record DetonatorLinkC2SPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("detonator_link"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonatorLinkC2SPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(DetonatorLinkC2SPacket::writePayload,
 			DetonatorLinkC2SPacket::read);
 
 	@Override

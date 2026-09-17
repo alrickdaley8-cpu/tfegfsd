@@ -117,7 +117,7 @@ public final class EMPManager {
 					inspected += depth;
 					continue;
 				}
-				int top = world.getHeight(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING, bx, bz);
+				int top = world.getTopY(net.minecraft.world.Heightmap.Type.MOTION_BLOCKING, bx, bz);
 				for (int dy = 0; dy < depth; dy++) {
 					int by = top - dy;
 					if (by < world.getBottomY() || by > world.getTopY()) {

@@ -22,7 +22,7 @@ public record AftermathS2CPacket(
 		new CustomPayload.Id<>(DoomsdayNukes.id("aftermath"));
 
 	public static final PacketCodec<RegistryByteBuf, AftermathS2CPacket> CODEC =
-		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+		CustomPayload.codecOf(AftermathS2CPacket::writePayload,
 			AftermathS2CPacket::read);
 
 	@Override

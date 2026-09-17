@@ -12,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.BlockView;
-import net.minecraft.block.MapColor;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -92,9 +91,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		super(AbstractBlock.Settings.create()
 			.strength(8.0F, 20.0F)
 			.requiresTool()
-			.mapColor(MapColor.METAL)
 			.sounds(BlockSoundGroup.METAL)
-			.noOcclusion()
 			.nonOpaque()
 			.notSolid()
 			// The armed warning light is also a dim light source, so a live device is
@@ -157,18 +154,6 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState,
-							 boolean moved) {
-		if (world.isClient || (oldState.isOf(state.getBlock()) && find(world, pos) != null)) {
-			return;
-		}
-		// Attach our own entity rather than relying on a provider-side hook, so placement,
-		// structure load and setBlock all take one path.
-		NukeBlockEntity be = createBlockEntity(pos, state);
-		world.setBlockEntity(pos, be);
-	}
-
-	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState,
 							   boolean moved) {
 		if (!state.isOf(newState.getBlock()) && !world.isClient) {
@@ -188,7 +173,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 			return null;
 		}
 		net.minecraft.block.entity.BlockEntity be = world.getBlockEntity(pos);
-		return be instanceof NukeBlockEntity nuke && ModBlockEntities.NUKE.isOf(be) ? nuke : null;
+		return be instanceof NukeBlockEntity nuke ? nuke : null;
 	}
 
 	/**
@@ -228,10 +213,10 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		double y = pos.getY() + 1.28D;
 		double z = pos.getZ() + 0.5D + (random.nextDouble() - 0.5D) * 0.5D;
 		if (random.nextFloat() < 0.55F) {
-			world.addAlwaysVisibleParticle(ParticleTypes.ELECTRIC_SPARK, true, x, y, z,
+			world.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z,
 				0.0D, 0.012D, 0.0D);
 		} else {
-			world.addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, x, y + 0.06D, z,
+			world.addParticle(ParticleTypes.SMOKE, x, y + 0.06D, z,
 				0.0D, 0.014D, 0.0D);
 		}
 	}
@@ -268,7 +253,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 
 		if (player.getStackInHand(hand).getItem() instanceof RemoteDetonatorItem) {
 			// The only way to acquire a link is to touch the device with the detonator.
-			RemoteDetonatorItem.handleDeviceUse(server, player, pos, be);
+			RemoteDetonatorItem.handleDeviceUse(server, player, pos);
 			return ActionResult.SUCCESS;
 		}
 		if (player.isSneaking()) {
@@ -284,8 +269,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player,
-						ItemStack usedStack) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && Boolean.TRUE.equals(state.get(ARMED)) && world instanceof ServerWorld server) {
 			NukeBlockEntity be = find(world, pos);
 			if (be != null) {
@@ -294,13 +278,13 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 				be.disarmSilently(server);
 			}
 		}
-		super.onBreak(world, pos, state, player, usedStack);
+		super.onBreak(world, pos, state, player);
 	}
 
 	// ———————————————————————————————————————————————————— countdown
 
 	@Override
-	public void onScheduledTick(BlockState state, ServerWorld world, BlockPos pos, Object tag) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		NukeBlockEntity be = find(world, pos);
 		if (be == null || !be.isArmed()) {
 			return;
@@ -313,7 +297,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		}
 		long remaining = target - now;
 		int step = (int) Math.max(1L, Math.min(remaining, PANIC_INTERVAL_TICKS));
-		world.createAndScheduleBlockTick(pos, this, step);
+		world.scheduleBlockTick(pos, this, step);
 		if (remaining > step || now - be.lastPanicScan() >= PANIC_INTERVAL_TICKS) {
 			panicNearbyMobs(world, pos, be);
 			be.notePanicScan(now, 0);
@@ -322,7 +306,7 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 
 	/** Starts the vanilla tick chain for a freshly armed device. */
 	public void startTimerChain(ServerWorld world, BlockPos pos, int timerTicks) {
-		world.createAndScheduleBlockTick(pos, this,
+		world.scheduleBlockTick(pos, this,
 			Math.max(1, Math.min(timerTicks, PANIC_INTERVAL_TICKS)));
 	}
 
@@ -348,7 +332,10 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 			LivingEntity e = found.get(i);
 			// Look at the device first: one vector, no pathfinding, and it reads as
 			// "something is very wrong" from any camera angle.
-			e.getLookControl().lookAt(centre.x, centre.y + 0.6D, centre.z);
+			if (e instanceof MobEntity m) {
+				// LookControl lives on MobEntity, not on every LivingEntity.
+				m.getLookControl().lookAt(centre.x, centre.y + 0.6D, centre.z);
+			}
 			if (e.squaredDistanceTo(centre) <= r * r) {
 				if (e instanceof MobEntity mob) {
 					// Clearing aggro is what turns a mob that was walking *towards* the player

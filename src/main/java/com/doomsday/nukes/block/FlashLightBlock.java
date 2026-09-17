@@ -7,6 +7,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -58,7 +59,7 @@ public class FlashLightBlock extends Block {
 		if (!world.setBlockState(pos, ModBlocks.FLASH_LIGHT.getDefaultState())) {
 			return false;
 		}
-		world.createAndScheduleBlockTick(pos, ModBlocks.FLASH_LIGHT, Math.max(1, ticks));
+		world.scheduleBlockTick(pos, ModBlocks.FLASH_LIGHT, Math.max(1, ticks));
 		return true;
 	}
 
@@ -85,7 +86,7 @@ public class FlashLightBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, ServerWorld world, BlockPos pos, Object tag) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		// Guard, then remove. The guard is what makes a stale scheduled tick harmless after the
 		// block was already replaced (for example by the crater arriving first).
 		if (world.getBlockState(pos).isOf(this)) {
@@ -108,13 +109,6 @@ public class FlashLightBlock extends Block {
 	@Override
 	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
 		return EMPTY;
-	}
-
-	@Override
-	public boolean isReplaceable(BlockState state, net.minecraft.item.ItemPlacementContext ctx) {
-		// Players must not be able to "place" into it, or a leftover emitter could be buried and
-		// stuck until its tick fires.
-		return false;
 	}
 
 	@Override
