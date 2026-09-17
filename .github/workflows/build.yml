@@ -59,30 +59,18 @@ jobs:
           set +e
           set +o pipefail
           fail=0
-          # Two limits shape this: a check run shows at most 10 annotations, and an annotation body
-          # is truncated at ~1024 characters. So neither "one annotation per error" (you get the first
-          # ten) nor "one annotation with everything" (you get the first 700 chars) works. Errors are
-          # packed into groups of 8 lines, each group one annotation, newlines written as %0A and
-          # literal percent signs escaped as %25 because a workflow command is parsed before display.
-          annotate() {
-            name="$1"; body="$2"
-            printf '%s\n' "$body" | awk -v name="$name" '
-              function flush() { if (buf != "") { print "::error::" name ": " n " line(s)@group%0A" buf; buf=""; n=0 } }
-              { line = $0; gsub(/%/, "%25", line); gsub(/\r/, "", line)
-                if (line == "") next
-                buf = buf (buf == "" ? "" : "%0A") line; n++
-                if (n == 8) flush() }
-              END { flush() }'
-          }
           run_check() {
             name="$1"; shift
             code=0
             out="$("$@" 2>&1)" || code=$?
             if [ "$code" -ne 0 ]; then
               fail=1
-              errors=$(printf '%s\n' "$out" | grep -E "^(ERROR|.*: error:|.*error:)" | head -80)
-              [ -n "$errors" ] || errors=$(printf '%s\n' "$out" | head -40)
-              annotate "$name" "$errors"
+              printf '%s\n' "$out" | grep -E "^(ERROR|.*: error:|.*error:)" | head -60 \
+                | bash tools/annotate.sh "$name"
+              # The summary line is the count the tool itself reports; without it a run that printed
+              # "35 error(s)" and showed 4 of them teaches the reader nothing.
+              printf '%s\n' "$out" | grep -E "error\(s\)|errors," | head -2 \
+                | bash tools/annotate.sh "$name-summary"
             else
               printf '%s\n' "$out" | tail -3
             fi
@@ -101,20 +89,28 @@ jobs:
           status=$?
           cat /tmp/build.log
           if [ "$status" -ne 0 ]; then
-            # First the compiler's own lines (file:line), then the task that failed, then the
-            # exception summary. Bounded so the annotation list stays readable: 40 real errors is
-            # already "fix these and re-run", not "read a transcript".
             {
-              grep -E "error:|warning: \[remap|FAILURE|What went wrong|Caused by" /tmp/build.log \
-                | head -70
-              echo "--- last lines ---"
-              tail -20 /tmp/build.log
-            } | sed "s|\n|%0A|g" | sed "1s|^|::error::build failed%0A|" | head -1
+              echo "== javac =="
+              grep -E "error:|\[remap|unmapped" /tmp/build.log | head -30
+              echo "== gradle =="
+              grep -A 6 "What went wrong" /tmp/build.log | head -24
+              grep -E "^\* (What went wrong|Where)|Caused by:|Task .* FAILED" /tmp/build.log | head -16
+              echo "== tail =="
+              tail -12 /tmp/build.log
+            } > /tmp/diag.log
+            bash tools/annotate.sh build < /tmp/diag.log
           fi
           exit "$status"
 
-      # Annotations carry the diagnosis; the artifact carries the whole transcript, which is what a
-      # build failure needs when the interesting part is 40 lines of stack trace above the summary.
+      - name: Upload the test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/test-results/test/*.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload the build log
         if: failure()
         uses: actions/upload-artifact@v4
