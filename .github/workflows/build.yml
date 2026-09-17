@@ -59,18 +59,29 @@ jobs:
           set +e
           set +o pipefail
           fail=0
+          # GitHub shows at most 10 annotations per check run, so one line per error is the wrong
+          # unit: the first ten errors of a four-hundred-error build is not information, it is a
+          # truncation. Errors are therefore packed into a few annotations joined by %0A, which the
+          # UI renders back as a multi-line code block, and the count is stated up front.
+          annotate() {
+            name="$1"; body="$2"
+            count=$(printf '%s\n' "$body" | grep -c . || true)
+            packed=$(printf '%s\n' "$body" | head -60 \
+              | awk '{gsub(/%/, "%25"); printf "%s%s", (NR>1 ? "%0A" : ""), $0}')
+            echo "::error::$name: $count line(s) of output (first 60 shown)%0A$packed"
+          }
           run_check() {
             name="$1"; shift
+            code=0
             out="$("$@" 2>&1)" || code=$?
-            code=${code:-0}
             if [ "$code" -ne 0 ]; then
               fail=1
-              printf '%s\n' "$out" | head -45 | sed "s|^|::error::[$name] |"
-              printf '::error::[%s] exited %s\n' "$name" "$code"
+              errors=$(printf '%s\n' "$out" | grep -E "^(ERROR|.*: error:|.*error:)" | head -80)
+              [ -n "$errors" ] || errors=$(printf '%s\n' "$out" | head -40)
+              annotate "$name" "$errors"
             else
               printf '%s\n' "$out" | tail -3
             fi
-            code=0
           }
           run_check asset-validator java -ea tools/AssetValidator.java src/main/resources
           run_check selfcheck python3 tools/selfcheck.py
@@ -89,9 +100,12 @@ jobs:
             # First the compiler's own lines (file:line), then the task that failed, then the
             # exception summary. Bounded so the annotation list stays readable: 40 real errors is
             # already "fix these and re-run", not "read a transcript".
-            grep -nE "error:|warning: \[remap|FAILURE|What went wrong|Caused by" /tmp/build.log \
-              | head -40 | sed 's|^[0-9]*:|::error::|'
-            tail -25 /tmp/build.log | sed 's|^|::error::|'
+            {
+              grep -E "error:|warning: \[remap|FAILURE|What went wrong|Caused by" /tmp/build.log \
+                | head -70
+              echo "--- last lines ---"
+              tail -20 /tmp/build.log
+            } | sed "s|\n|%0A|g" | sed "1s|^|::error::build failed%0A|" | head -1
           fi
           exit "$status"
 

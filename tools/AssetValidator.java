@@ -322,7 +322,12 @@ public final class AssetValidator {
 		}
 		Set<String> provided = new HashSet<>();
 		if (model.get("textures") instanceof Map<?, ?> t) {
-			provided.addAll(t.keySet());
+			// String.valueOf per key rather than addAll(t.keySet()): the key set of a Map<?, ?> is a
+			// Set<capture-of-?>, which javac will not hand to Set<String>#addAll — the wildcard could
+			// be anything, and it is right to be fussy about that.
+			for (Object key : t.keySet()) {
+				provided.add(String.valueOf(key));
+			}
 		}
 		for (Object o : list) {
 			if (!(o instanceof Map<?, ?> el)) {
