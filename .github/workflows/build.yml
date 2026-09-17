@@ -59,16 +59,20 @@ jobs:
           set +e
           set +o pipefail
           fail=0
-          # GitHub shows at most 10 annotations per check run, so one line per error is the wrong
-          # unit: the first ten errors of a four-hundred-error build is not information, it is a
-          # truncation. Errors are therefore packed into a few annotations joined by %0A, which the
-          # UI renders back as a multi-line code block, and the count is stated up front.
+          # Two limits shape this: a check run shows at most 10 annotations, and an annotation body
+          # is truncated at ~1024 characters. So neither "one annotation per error" (you get the first
+          # ten) nor "one annotation with everything" (you get the first 700 chars) works. Errors are
+          # packed into groups of 8 lines, each group one annotation, newlines written as %0A and
+          # literal percent signs escaped as %25 because a workflow command is parsed before display.
           annotate() {
             name="$1"; body="$2"
-            count=$(printf '%s\n' "$body" | grep -c . || true)
-            packed=$(printf '%s\n' "$body" | head -60 \
-              | awk '{gsub(/%/, "%25"); printf "%s%s", (NR>1 ? "%0A" : ""), $0}')
-            echo "::error::$name: $count line(s) of output (first 60 shown)%0A$packed"
+            printf '%s\n' "$body" | awk -v name="$name" '
+              function flush() { if (buf != "") { print "::error::" name ": " n " line(s)@group%0A" buf; buf=""; n=0 } }
+              { line = $0; gsub(/%/, "%25", line); gsub(/\r/, "", line)
+                if (line == "") next
+                buf = buf (buf == "" ? "" : "%0A") line; n++
+                if (n == 8) flush() }
+              END { flush() }'
           }
           run_check() {
             name="$1"; shift
@@ -108,6 +112,17 @@ jobs:
             } | sed "s|\n|%0A|g" | sed "1s|^|::error::build failed%0A|" | head -1
           fi
           exit "$status"
+
+      # Annotations carry the diagnosis; the artifact carries the whole transcript, which is what a
+      # build failure needs when the interesting part is 40 lines of stack trace above the summary.
+      - name: Upload the build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: /tmp/build.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload the mod jar
         uses: actions/upload-artifact@v4
