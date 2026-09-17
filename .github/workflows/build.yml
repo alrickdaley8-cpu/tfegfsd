@@ -137,6 +137,20 @@ jobs:
           git commit -q -m "ci: compiler errors for ${GITHUB_SHA::7} [ski""p ci]" || echo "nothing to record"
           git push -q origin HEAD:"${GITHUB_REF_NAME}" && echo "published"
 
+      # A green build deletes the record: the file only exists to carry diagnostics back to the
+      # branch when compilation fails, and leaving a stale transcript behind would make the next
+      # reader chase errors that have already been fixed.
+      - name: Clear the compiler-error record
+        if: success()
+        run: |
+          if [ -f ci-diagnostics/javac-errors.txt ]; then
+            git rm -q ci-diagnostics/javac-errors.txt
+            git config user.name "ci-diagnostics"
+            git config user.email "ci@localhost"
+            git commit -q -m "ci: compileJava is green again, dropping the error record [ski""p ci]"
+            git push -q origin HEAD:"${GITHUB_REF_NAME}" && echo "cleared"
+          fi
+
       - name: Upload the test report
         if: failure()
         uses: actions/upload-artifact@v4

@@ -291,10 +291,14 @@ public final class DoomsdayCommands {
 			ctx.getSource().sendError(DText.of("command.doomsday.needs_player"));
 			return 0;
 		}
-		double radius = DoubleArgumentType.getDouble(ctx, "radius");
 		DoomsdayConfig c = ConfigManager.get();
 		int ticks = Math.max(20, DoomsdayConfig.ticks(c.empSeconds));
-		radius = Math.min(radius, c.empMaxRadius * 8.0D);
+		// Clamp once, before the zone is built: the feedback line then cannot disagree with what
+		// was actually applied — and the value stays effectively final, which the supplier below
+		// needs, because sendFeedback is lazy on purpose (nothing is formatted unless the message
+		// is really going to a player).
+		final double radius = Math.min(DoubleArgumentType.getDouble(ctx, "radius"),
+			c.empMaxRadius * 8.0D);
 		EMPManager.addZone(player.getServerWorld(), player.getEyePos(), radius, ticks);
 		ctx.getSource().sendFeedback(() -> DText.of("command.doomsday.emp", (int) radius, ticks / 20), false);
 		return 1;
@@ -353,16 +357,17 @@ public final class DoomsdayCommands {
 
 	private static int setQuality(CommandContext<ServerCommandSource> ctx) {
 		String wanted = StringArgumentType.getString(ctx, "tier");
-		DoomsdayConfig.Quality target = null;
+		DoomsdayConfig.Quality found = null;
 		for (DoomsdayConfig.Quality q : DoomsdayConfig.Quality.values()) {
 			if (q.name().equalsIgnoreCase(wanted)) {
-				target = q;
+				found = q;
 			}
 		}
-		if (target == null) {
+		if (found == null) {
 			ctx.getSource().sendError(DText.of("command.doomsday.unknown_quality", wanted));
 			return 0;
 		}
+		final DoomsdayConfig.Quality target = found;
 		DoomsdayConfig c = ConfigManager.get();
 		c.quality = target;
 		ConfigManager.applyAndSave(c);
