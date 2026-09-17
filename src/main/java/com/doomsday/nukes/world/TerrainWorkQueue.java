@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutablePos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -166,7 +165,7 @@ public final class TerrainWorkQueue {
 		}
 		int used = 0;
 		int chunksThisTick = 0;
-		MutablePos cursor = new MutablePos(0, 0, 0);
+		BlockPos.Mutable cursor = new BlockPos.Mutable(0, 0, 0);
 
 		// Iterate backwards so buckets can be removed without disturbing indices.
 		for (int i = buckets.size() - 1; i >= 0 && used < budget && chunksThisTick < maxChunks; i--) {

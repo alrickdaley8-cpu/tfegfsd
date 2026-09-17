@@ -13,7 +13,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutablePos;
 import net.minecraft.world.World;
 
 /**
@@ -158,8 +157,8 @@ public final class CraterGenerator {
 
 		int queued = 0;
 		int inspected = 0;
-		final MutablePos pos = new MutablePos(0, 0, 0);
-		final MutablePos above = new MutablePos(0, 0, 0);
+		final BlockPos.Mutable pos = new BlockPos.Mutable(0, 0, 0);
+		final BlockPos.Mutable above = new BlockPos.Mutable(0, 0, 0);
 
 		for (int x = x0; x <= x1; x++) {
 			int dx = x - plan.originX;
@@ -202,7 +201,7 @@ public final class CraterGenerator {
 	// ———————————————————————————————————————————————————— decisions
 
 	/** Packs the local facts {@link DetonationTerrainPlan#classify} needs, in 2 block reads. */
-	private static byte contextOf(World world, MutablePos pos, MutablePos above, BlockState state) {
+	private static byte contextOf(World world, BlockPos.Mutable pos, BlockPos.Mutable above, BlockState state) {
 		byte ctx = 0;
 		above.set(pos.getX(), pos.getY() + 1, pos.getZ());
 		if (world.getBlockState(above).isAir()) {

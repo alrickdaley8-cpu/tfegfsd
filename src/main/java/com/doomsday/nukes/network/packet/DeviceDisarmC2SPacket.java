@@ -15,15 +15,16 @@ import net.minecraft.util.math.BlockPos;
 public record DeviceDisarmC2SPacket(
 			BlockPos pos
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DeviceDisarmC2SPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("device_disarm"));
+	public static final CustomPayload.Id<DeviceDisarmC2SPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("device_disarm"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceDisarmC2SPacket> CODEC =
-		PacketCodec.uniform(DeviceDisarmC2SPacket::writePayload, DeviceDisarmC2SPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DeviceDisarmC2SPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

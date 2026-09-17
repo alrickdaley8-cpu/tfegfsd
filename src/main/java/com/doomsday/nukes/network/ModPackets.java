@@ -33,8 +33,8 @@ import net.minecraft.util.math.Vec3d;
  * <h2>The rule this file exists to enforce</h2>
  * Codec <em>registration</em> is symmetric and belongs in common init
  * ({@link PayloadTypeRegistry}), but <em>client receivers</em> touch
- * {@code ClientPlayNetworking} and therefore may never be referenced from here. They live in
- * {@code com.doomsday.nukes.client.network.ClientPacketHandlers}, registered from the client
+ * {@code ClientPlayNetworking} and therefore may never be referenced from here. They are
+ * registered in {@code com.doomsday.nukes.client.DoomsdayNukesClient}, from the client
  * entrypoint only. A dedicated server thus loads zero client classes while still being able to
  * serialise every S2C payload it produces.
  *
@@ -56,42 +56,45 @@ public final class ModPackets {
 
 	public static void register() {
 		// S2C (server -> client)
-		PayloadTypeRegistry.playS2C().register(DetonationS2CPacket.TYPE, DetonationS2CPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(StageChangeS2CPacket.TYPE, StageChangeS2CPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(DeviceStateS2CPacket.TYPE, DeviceStateS2CPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(AftermathS2CPacket.TYPE, AftermathS2CPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(EmpSyncS2CPacket.TYPE, EmpSyncS2CPacket.CODEC);
-		PayloadTypeRegistry.playS2C().register(RadiationSyncS2CPacket.TYPE, RadiationSyncS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(DetonationS2CPacket.ID, DetonationS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(StageChangeS2CPacket.ID, StageChangeS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(DeviceStateS2CPacket.ID, DeviceStateS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(AftermathS2CPacket.ID, AftermathS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(EmpSyncS2CPacket.ID, EmpSyncS2CPacket.CODEC);
+		PayloadTypeRegistry.playS2C().register(RadiationSyncS2CPacket.ID, RadiationSyncS2CPacket.CODEC);
 
 		// C2S (client -> server)
-		PayloadTypeRegistry.playC2S().register(DeviceArmC2SPacket.TYPE, DeviceArmC2SPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(DeviceDisarmC2SPacket.TYPE, DeviceDisarmC2SPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(DetonatorLinkC2SPacket.TYPE, DetonatorLinkC2SPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(DetonatorFireC2SPacket.TYPE, DetonatorFireC2SPacket.CODEC);
-		PayloadTypeRegistry.playC2S().register(DetonateNowC2SPacket.TYPE, DetonateNowC2SPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(DeviceArmC2SPacket.ID, DeviceArmC2SPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(DeviceDisarmC2SPacket.ID, DeviceDisarmC2SPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(DetonatorLinkC2SPacket.ID, DetonatorLinkC2SPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(DetonatorFireC2SPacket.ID, DetonatorFireC2SPacket.CODEC);
+		PayloadTypeRegistry.playC2S().register(DetonateNowC2SPacket.ID, DetonateNowC2SPacket.CODEC);
 
 		registerServerReceivers();
 	}
 
 	private static void registerServerReceivers() {
-		ServerPlayNetworking.registerGlobalReceiver(DeviceArmC2SPacket.TYPE,
-			(server, player, handler, payload, sender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(DeviceArmC2SPacket.ID,
+			(payload, ctx) -> {
+				ServerPlayerEntity player = ctx.player();
 				if (!reachable(player, payload.pos())) {
 					return;
 				}
 				NukeBlockEntity.requestArm(server, player, payload.pos(), payload.timerSeconds());
 			});
 
-		ServerPlayNetworking.registerGlobalReceiver(DeviceDisarmC2SPacket.TYPE,
-			(server, player, handler, payload, sender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(DeviceDisarmC2SPacket.ID,
+			(payload, ctx) -> {
+				ServerPlayerEntity player = ctx.player();
 				if (!reachable(player, payload.pos())) {
 					return;
 				}
 				NukeBlockEntity.requestDisarm(server, player, payload.pos());
 			});
 
-		ServerPlayNetworking.registerGlobalReceiver(DetonatorLinkC2SPacket.TYPE,
-			(server, player, handler, payload, sender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(DetonatorLinkC2SPacket.ID,
+			(payload, ctx) -> {
+				ServerPlayerEntity player = ctx.player();
 				if (!reachable(player, payload.pos())) {
 					return;
 				}
@@ -101,12 +104,13 @@ public final class ModPackets {
 		// Deliberately *not* distance-checked to the device: the whole point of a remote
 		// detonator is distance. It is still validated server-side against the link stored on
 		// the item, so a client can only fire a device it legitimately linked.
-		ServerPlayNetworking.registerGlobalReceiver(DetonatorFireC2SPacket.TYPE,
-			(server, player, handler, payload, sender) ->
-				RemoteDetonatorItem.serverFire(player, payload.slot(), payload.cancelInstead()));
+		ServerPlayNetworking.registerGlobalReceiver(DetonatorFireC2SPacket.ID,
+			(payload, ctx) -> RemoteDetonatorItem.serverFire(ctx.player(), payload.slot(),
+				payload.cancelInstead()));
 
-		ServerPlayNetworking.registerGlobalReceiver(DetonateNowC2SPacket.TYPE,
-			(server, player, handler, payload, sender) -> {
+		ServerPlayNetworking.registerGlobalReceiver(DetonateNowC2SPacket.ID,
+			(payload, ctx) -> {
+				ServerPlayerEntity player = ctx.player();
 				// Debug/admin entry: same code path as an expiring countdown.
 				if (!ConfigManager.get().griefingEnabled && !player.isCreative()) {
 					return;
@@ -129,7 +133,7 @@ public final class ModPackets {
 	// ——————————————————————————————————————————————————————————— send
 
 	public static void sendToPlayer(ServerPlayerEntity player, CustomPayload payload) {
-		if (player != null && ServerPlayNetworking.canSend(player, payload.type())) {
+		if (player != null && ServerPlayNetworking.canSend(player, payload.getId())) {
 			ServerPlayNetworking.send(player, payload);
 		}
 	}

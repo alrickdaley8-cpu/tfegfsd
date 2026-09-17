@@ -32,7 +32,7 @@ public class ShockwaveEntity extends VisualEffectEntity {
 
 	public void applyStageConfig() {
 		DoomsdayConfig c = ConfigManager.get();
-		this.lifetime = Math.max(20, ConfigManager.ticks(c.shockwaveDurationSeconds));
+		this.lifetime = Math.max(20, DoomsdayConfig.ticks(c.shockwaveDurationSeconds));
 		this.ringCount = Math.max(1, Math.min(6, c.shockwaveRingCount));
 		// A wall roughly 2 % of the distance travelled, floored at 6 blocks: near the device the
 		// ring is a knife edge, far away it is a broad front, as in footage.

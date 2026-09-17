@@ -153,10 +153,10 @@ public final class AshPool {
 		NoiseField.curl((float) (pos.x * 0.03D), (float) (pos.y * 0.03D), (float) (pos.z * 0.03D),
 			ClientTicks.get() * 0.004F, 0.25F, 2, CURL);
 		double swirl = 0.045D * (1.0D + strength);
-		// addAlwaysVisibleParticle(effect, alwaysShow, x, y, z, vx, vy, vz): the "always visible"
-		// variant is the only one that does not disappear when the block behind it is culled,
-		// which matters because ash falls through geometry that the terrain pass just deleted.
-		world.addAlwaysVisibleParticle(effect, true,
+		// ClientWorld#addParticle(effect, alwaysVisible, x, y, z, vx, vy, vz): the flagged variant
+		// is the only one that does not disappear when the block behind it is culled, which matters
+		// because ash falls through geometry that the terrain pass just deleted.
+		world.addParticle(effect, true,
 			pos.x, pos.y, pos.z,
 			wind.x * strength * 0.12D + CURL[0] * swirl,
 			-0.055D - nextRandom01() * 0.02D + CURL[1] * swirl * 0.4D,

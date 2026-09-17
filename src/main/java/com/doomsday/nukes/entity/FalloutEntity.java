@@ -39,7 +39,7 @@ public class FalloutEntity extends VisualEffectEntity {
 		DoomsdayConfig c = ConfigManager.get();
 		this.geometryScale = Math.max(0.25D, geometryScaleForYield);
 		this.fallSeconds = Math.max(5.0D, c.ashFallSeconds);
-		this.lifetime = Math.max(100, ConfigManager.ticks((float) this.fallSeconds));
+		this.lifetime = Math.max(100, DoomsdayConfig.ticks((float) this.fallSeconds));
 		this.spreadRadius = Math.max(8.0D, c.falloutSpreadBlocks * this.geometryScale);
 		this.ashBudget = MathUtil.clamp(c.maxAshParticles, 100, 20000);
 		// Wind is derived from the epicentre hash, not from a random: the same crater must rain in

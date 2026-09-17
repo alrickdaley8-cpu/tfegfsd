@@ -23,15 +23,16 @@ public record RadiationSyncS2CPacket(long[] chunkKeys, float[] doses) implements
 	/** Upper bound accepted from the wire; matches the server's own sync budget. */
 	public static final int MAX_ENTRIES = 512;
 
-	public static final CustomPayload.Type<RadiationSyncS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("radiation_sync"));
+	public static final CustomPayload.Id<RadiationSyncS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("radiation_sync"));
 
 	public static final PacketCodec<RegistryByteBuf, RadiationSyncS2CPacket> CODEC =
-		PacketCodec.uniform(RadiationSyncS2CPacket::writePayload, RadiationSyncS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			RadiationSyncS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

@@ -87,7 +87,7 @@ public final class DoomsdayVisuals {
 		if (p.fireballLength() > 0.0F) {
 			FireballEntity fireball = new FireballEntity(ModEntities.FIREBALL, world);
 			fireball.configure(origin, p.fireballRadius(),
-				Math.max(20, ConfigManager.ticks(p.fireballLength())), yieldKt);
+				Math.max(20, DoomsdayConfig.ticks(p.fireballLength())), yieldKt);
 			fireball.applyStageConfig();
 			add(world, fireball, id);
 		}
@@ -96,7 +96,7 @@ public final class DoomsdayVisuals {
 		if (p.shockwaveLength() > 0.0F && p.shockwaveRadius() > 0.5F) {
 			ShockwaveEntity wave = new ShockwaveEntity(ModEntities.SHOCKWAVE, world);
 			wave.configure(origin, p.shockwaveRadius(),
-				Math.max(20, ConfigManager.ticks(p.shockwaveLength())), yieldKt);
+				Math.max(20, DoomsdayConfig.ticks(p.shockwaveLength())), yieldKt);
 			wave.applyStageConfig();
 			add(world, wave, id);
 		}
@@ -105,13 +105,13 @@ public final class DoomsdayVisuals {
 		if (c.cloudEnabled && p.cloudEnabled() && p.cloudLength() > 0.0F) {
 			MushroomCloudEntity cloud = new MushroomCloudEntity(ModEntities.MUSHROOM_CLOUD, world);
 			cloud.configure(origin, p.craterRadius() * 4.0D * geometry,
-				Math.max(60, ConfigManager.ticks(p.cloudLength())), yieldKt);
+				Math.max(60, DoomsdayConfig.ticks(p.cloudLength())), yieldKt);
 			cloud.applyStageConfig(Math.max(0.25D, p.cloudScale()));
 			add(world, cloud, id);
 
 			CloudAnchorEntity anchor = new CloudAnchorEntity(ModEntities.CLOUD_ANCHOR, world);
 			anchor.configure(origin, cloud.capRadius(), Math.max(60,
-				ConfigManager.ticks(p.cloudLength() * 1.15F)), yieldKt);
+				DoomsdayConfig.ticks(p.cloudLength() * 1.15F)), yieldKt);
 			anchor.applyStageConfig(Math.max(0.25D, p.cloudScale()), cloud.riseHeight(),
 				cloud.capRadius());
 			add(world, anchor, id);
@@ -121,7 +121,7 @@ public final class DoomsdayVisuals {
 		if (c.falloutEnabled && p.falloutEnabled() && p.falloutLength() > 0.0F) {
 			FalloutEntity fallout = new FalloutEntity(ModEntities.FALLOUT, world);
 			fallout.configure(origin, Math.max(24.0D, p.craterRadius() * 3.0D),
-				Math.max(100, ConfigManager.ticks(p.falloutLength())), yieldKt);
+				Math.max(100, DoomsdayConfig.ticks(p.falloutLength())), yieldKt);
 			fallout.applyStageConfig(geometry);
 			add(world, fallout, id);
 		}
@@ -169,7 +169,7 @@ public final class DoomsdayVisuals {
 		}
 		// -1 asks the client world to allocate an id: exactly what vanilla does for client-only
 		// effects, and it cannot collide with a server-assigned id.
-		world.addEntity(-1, entity);
+		world.addEntity(entity);
 		LIVE.add(entity);
 		spawned++;
 	}

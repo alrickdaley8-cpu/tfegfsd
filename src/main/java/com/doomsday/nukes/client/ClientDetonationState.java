@@ -103,8 +103,8 @@ public final class ClientDetonationState {
 		if (!c.flashEnabled) {
 			atten = 0.0D;
 		}
-		float whiteout = Math.max(0.0F, ConfigManager.ticks(c.flashWhiteoutSeconds) / 20.0F);
-		float desat = Math.max(0.05F, ConfigManager.ticks(c.flashDesaturateSeconds) / 20.0F);
+		float whiteout = Math.max(0.0F, DoomsdayConfig.ticks(c.flashWhiteoutSeconds) / 20.0F);
+		float desat = Math.max(0.05F, DoomsdayConfig.ticks(c.flashDesaturateSeconds) / 20.0F);
 		float t = (float) this.elapsed;
 		float peak = (float) MathUtil.clamp(atten, 0.0D, 1.0D);
 		if (t <= whiteout) {
@@ -126,7 +126,7 @@ public final class ClientDetonationState {
 		double shakeFull = Math.max(4.0D, c.cameraShakeFullRadius);
 		double shakeMax = Math.max(shakeFull + 16.0D, c.cameraShakeMaxRadius);
 		double shakeAtten = MathUtil.attenuation(this.distance, shakeFull, shakeMax, 2.0D);
-		float window = Math.max(0.2F, ConfigManager.ticks(c.cameraShakeSeconds) / 20.0F);
+		float window = Math.max(0.2F, DoomsdayConfig.ticks(c.cameraShakeSeconds) / 20.0F);
 		float decay = (float) MathUtil.decay(t / window, 1.6D);
 		this.shake = (float) MathUtil.clamp(c.cameraShakeStrength, 0.0D, 3.0D) * (float) shakeAtten * decay;
 		this.roll = (float) MathUtil.clamp(c.cameraShakeRollDegrees, 0.0D, 12.0D) * this.shake;

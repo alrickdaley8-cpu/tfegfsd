@@ -66,15 +66,16 @@ public record DetonationS2CPacket(
 		boolean falloutEnabled,
 		boolean atmosphereEnabled
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DetonationS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("detonation"));
+	public static final CustomPayload.Id<DetonationS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("detonation"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonationS2CPacket> CODEC =
-		PacketCodec.uniform(DetonationS2CPacket::writePayload, DetonationS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DetonationS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

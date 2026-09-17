@@ -10,6 +10,7 @@ import com.doomsday.nukes.network.packet.DetonatorFireC2SPacket;
 import com.doomsday.nukes.network.packet.DetonatorLinkC2SPacket;
 import com.doomsday.nukes.sound.ModSounds;
 import com.doomsday.nukes.util.DText;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

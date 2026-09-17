@@ -17,15 +17,16 @@ public record DetonatorLinkC2SPacket(
 			BlockPos pos,
 			int slot
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DetonatorLinkC2SPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("detonator_link"));
+	public static final CustomPayload.Id<DetonatorLinkC2SPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("detonator_link"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonatorLinkC2SPacket> CODEC =
-		PacketCodec.uniform(DetonatorLinkC2SPacket::writePayload, DetonatorLinkC2SPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DetonatorLinkC2SPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

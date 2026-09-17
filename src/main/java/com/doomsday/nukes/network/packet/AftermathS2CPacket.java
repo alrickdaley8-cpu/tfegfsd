@@ -18,15 +18,16 @@ public record AftermathS2CPacket(
 			float recoverSeconds,
 			float darkness
 ) implements CustomPayload {
-	public static final CustomPayload.Type<AftermathS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("aftermath"));
+	public static final CustomPayload.Id<AftermathS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("aftermath"));
 
 	public static final PacketCodec<RegistryByteBuf, AftermathS2CPacket> CODEC =
-		PacketCodec.uniform(AftermathS2CPacket::writePayload, AftermathS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			AftermathS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

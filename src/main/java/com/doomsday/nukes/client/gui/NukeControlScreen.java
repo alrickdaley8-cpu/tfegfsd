@@ -88,7 +88,7 @@ public class NukeControlScreen extends Screen {
 		boolean canDetonateNow = c.griefingEnabled || creative;
 		this.addDrawableChild(ButtonWidget.builder(
 				canDetonateNow ? DText.of("gui.doomsday.control.detonate")
-					: DText.of("gui.doomsday.control.detonate_locked").formatted(Formatting.GRAY),
+					: DText.of("gui.doomsday.control.detonate_locked", Formatting.GRAY),
 				b -> {
 					if (canDetonateNow) {
 						send(new DetonateNowC2SPacket(this.pos, this.preset.ordinal()));
@@ -150,7 +150,7 @@ public class NukeControlScreen extends Screen {
 	private static void send(net.minecraft.network.packet.CustomPayload payload) {
 		// Client-only class, client-only path: no seam needed here (the seam in
 		// ClientPayloadSender exists for the *common* item code, not for this).
-		if (ClientPlayNetworking.canSend(payload.type())) {
+		if (ClientPlayNetworking.canSend(payload.getId())) {
 			ClientPlayNetworking.send(payload);
 		}
 	}
@@ -178,9 +178,9 @@ public class NukeControlScreen extends Screen {
 		if (seconds > 0) {
 			status = DText.armedBanner(seconds);
 		} else if (state != null && state.empSuppressed()) {
-			status = DText.of("gui.doomsday.control.emp_suppressed").formatted(Formatting.RED);
+			status = DText.of("gui.doomsday.control.emp_suppressed", Formatting.RED);
 		} else {
-			status = DText.of("gui.doomsday.control.idle").formatted(Formatting.GRAY);
+			status = DText.of("gui.doomsday.control.idle", Formatting.GRAY);
 		}
 		context.drawTextWithShadow(this.textRenderer, status,
 			cx - this.textRenderer.getWidth(status) / 2, top + 26, 0xFFFFFFFF);
@@ -194,7 +194,7 @@ public class NukeControlScreen extends Screen {
 			this.height / 2 + 62, 0xFFB8C0B0);
 		if (!c.griefingEnabled) {
 			context.drawTextWithShadow(this.textRenderer,
-				DText.of("gui.doomsday.control.clean_mode").formatted(Formatting.YELLOW),
+				DText.of("gui.doomsday.control.clean_mode", Formatting.YELLOW),
 				cx - this.textRenderer.getWidth("clean") / 2, this.height / 2 + 74, 0xFFFFE08A);
 		}
 	}

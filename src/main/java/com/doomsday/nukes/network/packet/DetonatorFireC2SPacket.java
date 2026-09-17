@@ -16,15 +16,16 @@ public record DetonatorFireC2SPacket(
 			int slot,
 			boolean cancelInstead
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DetonatorFireC2SPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("detonator_fire"));
+	public static final CustomPayload.Id<DetonatorFireC2SPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("detonator_fire"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonatorFireC2SPacket> CODEC =
-		PacketCodec.uniform(DetonatorFireC2SPacket::writePayload, DetonatorFireC2SPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DetonatorFireC2SPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

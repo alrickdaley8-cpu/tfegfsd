@@ -74,7 +74,7 @@ public class IodineTabletItem extends Item {
 			stack.decrement(1);
 		}
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EAT,
-			SoundCategory.PLAYER, 0.9F, 1.35F);
+			SoundCategory.PLAYERS, 0.9F, 1.35F);
 		player.sendMessage(DText.of("gui.doomsday.iodine.taken",
 			(int) Math.round(seconds)), true);
 		return TypedActionResult.success(stack);

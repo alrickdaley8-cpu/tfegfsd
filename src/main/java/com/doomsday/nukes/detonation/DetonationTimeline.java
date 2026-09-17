@@ -1,5 +1,6 @@
 package com.doomsday.nukes.detonation;
 
+import com.doomsday.nukes.config.ConfigManager;
 import com.doomsday.nukes.config.DoomsdayConfig;
 import com.doomsday.nukes.util.MathUtil;
 

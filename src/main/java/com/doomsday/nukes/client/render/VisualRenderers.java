@@ -19,12 +19,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.Matrix3f;
+import org.joml.Matrix3f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
@@ -160,7 +160,8 @@ public final class VisualRenderers {
 		}
 
 		@Override
-		public boolean shouldRender(T entity, Camera cam, double squaredDistance) {
+		public boolean shouldRender(T entity, net.minecraft.client.render.Frustum frustum,
+				double cameraX, double cameraY, double cameraZ) {
 			// These entities are pinned to the epicentre and can be kilometres wide, so the
 			// per-entity frustum/distance test is both wrong (a 400-block cloud has a 1-block box)
 			// and unnecessary (DoomsdayVisuals never creates them past the configured view

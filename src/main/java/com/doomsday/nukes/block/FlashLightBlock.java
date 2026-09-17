@@ -3,8 +3,7 @@ package com.doomsday.nukes.block;
 import com.doomsday.nukes.registry.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockView;
-import net.minecraft.block.RenderShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -92,11 +91,6 @@ public class FlashLightBlock extends Block {
 		if (world.getBlockState(pos).isOf(this)) {
 			world.removeBlock(pos, false);
 		}
-	}
-
-	@Override
-	public RenderShape getRenderShape(BlockState state) {
-		return RenderShape.INVISIBLE;
 	}
 
 	@Override

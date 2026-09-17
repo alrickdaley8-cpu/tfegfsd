@@ -293,7 +293,7 @@ public final class DoomsdayCommands {
 		}
 		double radius = DoubleArgumentType.getDouble(ctx, "radius");
 		DoomsdayConfig c = ConfigManager.get();
-		int ticks = Math.max(20, ConfigManager.ticks(c.empSeconds));
+		int ticks = Math.max(20, DoomsdayConfig.ticks(c.empSeconds));
 		radius = Math.min(radius, c.empMaxRadius * 8.0D);
 		EMPManager.addZone(player.getServerWorld(), player.getEyePos(), radius, ticks);
 		ctx.getSource().sendFeedback(DText.of("command.doomsday.emp", (int) radius, ticks / 20));

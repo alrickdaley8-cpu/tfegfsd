@@ -20,15 +20,16 @@ public record StageChangeS2CPacket(
 			float timeSeconds,
 			BlockPos origin
 ) implements CustomPayload {
-	public static final CustomPayload.Type<StageChangeS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("stage_change"));
+	public static final CustomPayload.Id<StageChangeS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("stage_change"));
 
 	public static final PacketCodec<RegistryByteBuf, StageChangeS2CPacket> CODEC =
-		PacketCodec.uniform(StageChangeS2CPacket::writePayload, StageChangeS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			StageChangeS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

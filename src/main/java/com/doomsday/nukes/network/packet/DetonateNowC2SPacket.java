@@ -16,15 +16,16 @@ public record DetonateNowC2SPacket(
 			BlockPos pos,
 			int preset
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DetonateNowC2SPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("detonate_now"));
+	public static final CustomPayload.Id<DetonateNowC2SPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("detonate_now"));
 
 	public static final PacketCodec<RegistryByteBuf, DetonateNowC2SPacket> CODEC =
-		PacketCodec.uniform(DetonateNowC2SPacket::writePayload, DetonateNowC2SPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DetonateNowC2SPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

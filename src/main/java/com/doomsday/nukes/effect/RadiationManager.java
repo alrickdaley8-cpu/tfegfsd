@@ -178,7 +178,7 @@ public final class RadiationManager {
 		int amplifier = (int) Math.floor((exposure - SICKNESS_THRESHOLD)
 			/ ((100.0D - SICKNESS_THRESHOLD) / (span + 1)));
 		amplifier = MathHelper.clamp(amplifier, 0, span);
-		int duration = Math.max(40, ConfigManager.ticks(c.radiationEffectSeconds));
+		int duration = Math.max(40, DoomsdayConfig.ticks(c.radiationEffectSeconds));
 		StatusEffectInstance existing = player.getStatusEffect(type);
 		// Refresh only when the amplifier changed or the tail is short: re-adding every second
 		// would flicker the icon and send a redundant packet per player per second.

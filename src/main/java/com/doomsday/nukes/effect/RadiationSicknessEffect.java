@@ -88,7 +88,7 @@ public class RadiationSicknessEffect extends StatusEffect {
 
 	/** Ticks between {@link #applyUpdateEffect} beats, from {@code radiationTickIntervalSeconds}. */
 	public static int intervalTicks(DoomsdayConfig c) {
-		return Math.max(20, ConfigManager.ticks(c.radiationTickIntervalSeconds));
+		return Math.max(20, DoomsdayConfig.ticks(c.radiationTickIntervalSeconds));
 	}
 
 	@Override

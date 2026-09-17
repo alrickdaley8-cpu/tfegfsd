@@ -62,7 +62,7 @@ public class MushroomCloudEntity extends VisualEffectEntity {
 		// cross-check against the crater.
 		double detail = MathUtil.clamp(q.sampleScale, 0.25D, 1.0D);
 		this.geometryScale = Math.max(0.25D, geometryScaleForYield);
-		this.lifetime = Math.max(60, ConfigManager.ticks(c.cloudLifetimeSeconds));
+		this.lifetime = Math.max(60, DoomsdayConfig.ticks(c.cloudLifetimeSeconds));
 		this.riseBlocks = Math.max(8.0D, c.cloudRiseBlocks * this.geometryScale);
 		this.stemSegments = MathUtil.clamp((int) Math.round(c.cloudStemSegments * detail), 4, 64);
 		// c.cloudCapSamples is the *logical* sample count from the spec (100); q.cloudCapSamples is

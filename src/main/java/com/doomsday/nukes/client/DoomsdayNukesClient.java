@@ -93,18 +93,18 @@ public final class DoomsdayNukesClient implements ClientModInitializer {
 
 		// 3 — client receivers. Every handler marshals onto the client thread with executeSync, so
 		// none of them can touch a render structure from the network thread.
-		ClientPlayNetworking.registerGlobalReceiver(DetonationS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(DetonationS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() -> DoomsdayVisuals.onDetonation(payload)));
-		ClientPlayNetworking.registerGlobalReceiver(StageChangeS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(StageChangeS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() -> onStageChange(payload)));
-		ClientPlayNetworking.registerGlobalReceiver(DeviceStateS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(DeviceStateS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() -> onDeviceState(payload)));
-		ClientPlayNetworking.registerGlobalReceiver(RadiationSyncS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(RadiationSyncS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() ->
 				RadiationManager.handleClientField(payload.chunkKeys(), payload.doses())));
-		ClientPlayNetworking.registerGlobalReceiver(AftermathS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(AftermathS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() -> onAftermath(payload)));
-		ClientPlayNetworking.registerGlobalReceiver(EmpSyncS2CPacket.TYPE,
+		ClientPlayNetworking.registerGlobalReceiver(EmpSyncS2CPacket.ID,
 			(payload, receiver) -> receiver.client().execute(() -> onEmpSync(payload)));
 
 		// 4 — one client tick, in dependency order (see the class javadoc).

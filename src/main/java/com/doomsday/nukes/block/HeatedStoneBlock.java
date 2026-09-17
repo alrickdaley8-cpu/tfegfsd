@@ -1,10 +1,11 @@
 package com.doomsday.nukes.block;
 
 import com.doomsday.nukes.config.ConfigManager;
+import com.doomsday.nukes.config.DoomsdayConfig;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockView;
+import net.minecraft.world.BlockView;
 import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -38,7 +39,7 @@ public class HeatedStoneBlock extends Block {
 		if (world.isClient || oldState.isOf(state.getBlock())) {
 			return;
 		}
-		int life = Math.max(20, ConfigManager.ticks(ConfigManager.get().heatedStoneSeconds));
+		int life = Math.max(20, DoomsdayConfig.ticks(ConfigManager.get().heatedStoneSeconds));
 		((ServerWorld) world).createAndScheduleBlockTick(pos, this, life);
 	}
 

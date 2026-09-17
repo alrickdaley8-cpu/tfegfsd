@@ -40,7 +40,7 @@ public class FireballEntity extends VisualEffectEntity {
 		this.growFraction = grow / total;
 		this.holdFraction = hold / total;
 		this.fadeFraction = fade / total;
-		this.lifetime = Math.max(20, ConfigManager.ticks((float) total));
+		this.lifetime = Math.max(20, DoomsdayConfig.ticks((float) total));
 		this.startRadius = Math.max(0.5D, c.fireballStartRadius);
 		this.colorSeed = MathUtil.hash((int) Math.floor(this.origin.x),
 			(int) Math.floor(this.origin.y), (int) Math.floor(this.origin.z));

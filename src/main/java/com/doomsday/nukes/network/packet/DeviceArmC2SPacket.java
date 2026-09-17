@@ -18,15 +18,16 @@ public record DeviceArmC2SPacket(
 			BlockPos pos,
 			int timerSeconds
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DeviceArmC2SPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("device_arm"));
+	public static final CustomPayload.Id<DeviceArmC2SPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("device_arm"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceArmC2SPacket> CODEC =
-		PacketCodec.uniform(DeviceArmC2SPacket::writePayload, DeviceArmC2SPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DeviceArmC2SPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

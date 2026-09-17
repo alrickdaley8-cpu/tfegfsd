@@ -21,15 +21,16 @@ public record DeviceStateS2CPacket(
 			double yieldKt,
 			boolean empSuppressed
 ) implements CustomPayload {
-	public static final CustomPayload.Type<DeviceStateS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("device_state"));
+	public static final CustomPayload.Id<DeviceStateS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("device_state"));
 
 	public static final PacketCodec<RegistryByteBuf, DeviceStateS2CPacket> CODEC =
-		PacketCodec.uniform(DeviceStateS2CPacket::writePayload, DeviceStateS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			DeviceStateS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

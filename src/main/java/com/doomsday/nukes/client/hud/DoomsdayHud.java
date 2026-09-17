@@ -175,7 +175,7 @@ public final class DoomsdayHud {
 		int seconds = device.secondsRemaining();
 		Text banner = DText.armedBanner(seconds);
 		if (device.empSuppressed()) {
-			banner = banner.shallowCopy().formatted(Formatting.GRAY);
+			banner = banner.copy().formatted(Formatting.GRAY);
 		}
 		int textWidth = clientText().getWidth(banner);
 		int x = (width - textWidth) / 2;

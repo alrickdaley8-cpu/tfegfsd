@@ -97,7 +97,7 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = 'UTF-8'
 	it.options.release = 21
 	it.options.deprecation = false
-	it.options.compilerArgs += ['-Xlint:unchecked']
+	it.options.compilerArgs += ['-Xlint:unchecked', '-Xmaxerrs', '400']
 }
 
 java {

@@ -41,7 +41,7 @@ public class CloudAnchorEntity extends VisualEffectEntity {
 	public void applyStageConfig(double geometryScaleForYield, double capHeight, double capRadius) {
 		DoomsdayConfig c = ConfigManager.get();
 		this.geometryScale = Math.max(0.25D, geometryScaleForYield);
-		this.lifetime = Math.max(60, ConfigManager.ticks(c.cloudLifetimeSeconds * 1.15F));
+		this.lifetime = Math.max(60, DoomsdayConfig.ticks(c.cloudLifetimeSeconds * 1.15F));
 		this.shadowRadius = Math.max(16.0D, capRadius * 1.9D * this.geometryScale);
 		this.peakDarkness = MathUtil.clamp(c.skyDarkness, 0.0D, 0.95D);
 		this.hazeDensity = Math.max(0.0D, c.hazeDensity);

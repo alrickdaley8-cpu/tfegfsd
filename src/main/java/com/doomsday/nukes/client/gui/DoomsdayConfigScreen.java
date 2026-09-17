@@ -154,7 +154,7 @@ public class DoomsdayConfigScreen extends Screen {
 
 	private void toggle(int x, int y, String key, BooleanSupplier get, Consumer<Boolean> set) {
 		this.addDrawableChild(ButtonWidget.builder(label(key, get.getAsBoolean() ? "ON" : "OFF",
-				get.getAsBoolean() ? 0xFFA6E22E : 0xFF9AA0A6), b -> {
+				get.getAsBoolean() ? Formatting.GREEN : Formatting.GRAY), b -> {
 			set.accept(!get.getAsBoolean());
 			this.clearChildren();
 			this.init();
@@ -183,7 +183,7 @@ public class DoomsdayConfigScreen extends Screen {
 
 	private void cycle(int x, int y, String key, java.util.function.Supplier<String> value,
 					   Runnable advance) {
-		this.addDrawableChild(ButtonWidget.builder(label(key, value.get(), 0xFFDDDDDD), b -> {
+		this.addDrawableChild(ButtonWidget.builder(label(key, value.get(), Formatting.WHITE), b -> {
 			advance.run();
 			this.clearChildren();
 			this.init();
@@ -193,13 +193,14 @@ public class DoomsdayConfigScreen extends Screen {
 	private Text text(String key, double value, int decimals) {
 		String num = decimals <= 0 ? String.valueOf((long) value)
 			: String.format(java.util.Locale.ROOT, "%." + decimals + "f", value);
-		return label(key, num, 0xFFDDDDDD);
+		return label(key, num, Formatting.WHITE);
 	}
 
-	private static Text label(String key, String value, int color) {
-		return DText.of(key).append(Text.literal(": ").formatted(Formatting.GRAY))
-			.append(Text.literal(value).formatted(Formatting.WHITE)
-				.withStyle(s -> s.withColor(color)));
+	// Formatting, not a raw RGB int: Text is immutable in 1.21.1 and the mutation surface is
+	// MutableText, so a "just tint the value" overload has to be built on formatted() anyway.
+	private static Text label(String key, String value, Formatting color) {
+		return DText.mutable(key).append(Text.literal(": "))
+			.append(Text.literal(value).formatted(color));
 	}
 
 	@Override
@@ -209,7 +210,7 @@ public class DoomsdayConfigScreen extends Screen {
 		context.drawTextWithShadow(this.textRenderer, this.title,
 			this.width / 2 - this.textRenderer.getWidth(this.title) / 2, this.height / 2 - 108,
 			0xFFFFD9A0);
-		Text hint = DText.of("gui.doomsday.config.hint").formatted(Formatting.GRAY);
+		Text hint = DText.of("gui.doomsday.config.hint", Formatting.GRAY);
 		context.drawTextWithShadow(this.textRenderer, hint,
 			this.width / 2 - this.textRenderer.getWidth(hint) / 2, this.height - 30, 0xFFAAAAAA);
 	}

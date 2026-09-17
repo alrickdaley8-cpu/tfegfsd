@@ -95,7 +95,7 @@ public final class GeigerDriver {
 			float pitch = (float) (1.0D + (Math.random() - 0.5D) * 0.5D);
 			float volume = (float) MathHelper.clamp(0.25D + effective * 0.75D, 0.1D, 1.0D);
 			client.world.playSound(null, player.getX(), player.getY(), player.getZ(),
-				ModSounds.GEIGER, SoundCategory.PLAYER, volume, pitch);
+				ModSounds.GEIGER, SoundCategory.PLAYERS, volume, pitch);
 			clicks++;
 		}
 		if (accumulator > interval * 4.0D) {
@@ -108,7 +108,7 @@ public final class GeigerDriver {
 			alarming = shouldAlarm;
 			if (shouldAlarm) {
 				client.world.playSound(null, player.getX(), player.getY(), player.getZ(),
-					ModSounds.NUKE_FLASH_HISS, SoundCategory.PLAYER, 0.45F, 1.9F);
+					ModSounds.NUKE_FLASH_HISS, SoundCategory.PLAYERS, 0.45F, 1.9F);
 			}
 		}
 	}

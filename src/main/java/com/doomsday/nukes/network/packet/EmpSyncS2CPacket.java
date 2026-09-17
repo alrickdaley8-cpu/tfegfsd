@@ -19,15 +19,16 @@ public record EmpSyncS2CPacket(
 			int ticks,
 			boolean active
 ) implements CustomPayload {
-	public static final CustomPayload.Type<EmpSyncS2CPacket> TYPE =
-		new CustomPayload.Type<>(DoomsdayNukes.id("emp_sync"));
+	public static final CustomPayload.Id<EmpSyncS2CPacket> ID =
+		new CustomPayload.Id<>(DoomsdayNukes.id("emp_sync"));
 
 	public static final PacketCodec<RegistryByteBuf, EmpSyncS2CPacket> CODEC =
-		PacketCodec.uniform(EmpSyncS2CPacket::writePayload, EmpSyncS2CPacket::read);
+		CustomPayload.codecOf((buf, payload) -> payload.writePayload(buf),
+			EmpSyncS2CPacket::read);
 
 	@Override
-	public CustomPayload.Type<? extends CustomPayload> type() {
-		return TYPE;
+	public CustomPayload.Id<? extends CustomPayload> getId() {
+		return ID;
 	}
 
 	private void writePayload(RegistryByteBuf buf) {

@@ -11,9 +11,8 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockView;
+import net.minecraft.world.BlockView;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.RenderShape;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -52,7 +51,7 @@ import java.util.List;
  * two-voxel device (the {@code HALF=UPPER/LOWER} pattern doors and beds use) would double the
  * desync surface for no gameplay gain: every arm, disarm, detonate and link operation would
  * have to locate and update both halves consistently, and "upper half present, lower half
- * destroyed" becomes reachable. So: {@link RenderShape#INVISIBLE} block, animated 3D model in
+ * destroyed" becomes reachable. So: a block whose model carries no elements, animated 3D geometry in
  * the block entity, oversized {@link #getOutlineShape} so the selection box matches the
  * silhouette you can actually aim at, and a {@link #getCullingShape} that matches too —
  * otherwise the missile pops out of existence when its base voxel leaves the frustum.
@@ -123,11 +122,6 @@ public class NukeBlock extends Block implements BlockEntityProvider {
 		// Nose points away from the placer, which is how a launch assembly reads.
 		Direction facing = ctx.getHorizontalPlayerFacing().getOpposite();
 		return getDefaultState().with(FACING, facing);
-	}
-
-	@Override
-	public RenderShape getRenderShape(BlockState state) {
-		return RenderShape.INVISIBLE;
 	}
 
 	@Override

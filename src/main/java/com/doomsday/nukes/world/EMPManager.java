@@ -14,7 +14,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutablePos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public final class EMPManager {
 		int tickBudgeted(int budget) {
 			int inspected = 0;
 			DoomsdayConfig c = ConfigManager.get();
-			MutablePos pos = new MutablePos(0, 0, 0);
+			BlockPos.Mutable pos = new BlockPos.Mutable(0, 0, 0);
 			int limit = Math.max(16, budget / Math.max(1, depth));
 			for (int i = 0; i < limit && cursor < totalColumns; i++) {
 				int col = cursor++;
@@ -201,7 +200,7 @@ public final class EMPManager {
 			if (captured.isEmpty() && beacons.isEmpty()) {
 				return;
 			}
-			MutablePos pos = new MutablePos(0, 0, 0);
+			BlockPos.Mutable pos = new BlockPos.Mutable(0, 0, 0);
 			int n = 0;
 			for (Long2ObjectMap.Entry<BlockState> e : captured.long2ObjectEntrySet()) {
 				long key = e.getLongKey();
