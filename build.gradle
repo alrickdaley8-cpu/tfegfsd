@@ -1,0 +1,134 @@
+plugins {
+	id 'eclipse'
+	id 'idea'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	// Fabric loader / API / yarn mappings
+	maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+	// Mod Menu
+	maven { name = 'Terraformers'; url = 'https://maven.terraformersmc.com/releases/' }
+	mavenCentral()
+}
+
+loom {
+	// Client and server source sets are NOT split: this mod keeps client code in
+	// dedicated @Environment(EnvType.CLIENT) classes and registers it only from the
+	// client entrypoint, so a dedicated server never loads a render class.
+	// `runs` below exists so `./gradlew runClient` targets a predictable dir.
+	runs {
+		client {
+			id = 'client'
+		}
+		server {
+			id = 'server'
+			runDir = 'run-server'
+		}
+	}
+}
+
+configurations {
+	// Mod Menu's API is compiled against and run locally, but never required at
+	// runtime: `modCompileOnly` keeps it out of the remap+jar pipeline entirely, so
+	// the shipped jar carries no reference to com.terraformersmc.
+	modCompileOnly
+	modLocalRuntime
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API is the only hard runtime dependency besides the loader.
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// ── Optional integrations (compile-time only) ────────────────────────────
+	// Mod Menu: discovered through the `modmenu` entrypoint. If the user does not
+	// install Mod Menu, the entrypoint class is simply never loaded -> no crash.
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modLocalRuntime  "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+	// Cloth Config and GeckoLib are deliberately NOT dependencies. Both were wired
+	// up earlier in development and both came out: the config screen is built from
+	// ButtonWidgets bound directly to the config class (no library needed, and no
+	// version-churn risk from SliderWidget/ConfigList entries), and the visuals are
+	// procedural quads + vanilla particles (a .geo missile model would add a hard
+	// runtime requirement for one animated object). Re-adding either is a README
+	// "future work" item, not a build-script hole.
+	// ── Tests: pure-math / timeline / config only (no Minecraft classes touched)
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.2"
+	testRuntimeOnly   "org.junit.jupiter:junit-jupiter-engine:5.10.2"
+	testImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+}
+
+// Test source set inherits main's compile/runtime classpath so the Minecraft
+// remap jar is visible when JUnit loads the classes under test.
+sourceSets {
+	test {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath  += main.runtimeClasspath + main.output
+	}
+}
+
+processResources {
+	inputs.property 'version', project.version
+
+	filesMatching('fabric.mod.json') {
+		expand 'version': project.version, 'id': project.mod_id, 'name': project.mod_name
+	}
+	// Do not let Gson-processed asset JSON choke on Gradle's `$` handling.
+	filesMatching('**/*.json') { }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = 'UTF-8'
+	it.options.release = 21
+	it.options.deprecation = false
+	it.options.compilerArgs += ['-Xlint:unchecked']
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+jar {
+	from('LICENSE') {
+		rename { "${it}_${project.base.archivesName.get()}" }
+	}
+}
+
+// ── Resource integrity gate ────────────────────────────────────────────────
+// `./gradlew checkAssets` fails the build if any JSON shipped by the mod is
+// malformed, or if a texture / model / sound / shader / lang path referenced
+// from that JSON does not exist on disk. Real CI-style guard for an
+// asset-heavy mod; it costs a fraction of a second and uses the JDK's
+// single-file source launcher so nothing extra has to be compiled.
+tasks.register('checkAssets', Exec) {
+	group = 'doomsday'
+	description = 'Validates every JSON/texture/sound/shader path referenced by the mod.'
+	def javaHome = System.getProperty('java.home')
+	def javaExe = javaHome ? new File(javaHome, 'bin/java').absolutePath : 'java'
+	commandLine(javaExe, '-ea',
+		file('tools/AssetValidator.java').absolutePath,
+		file('src/main/resources').absolutePath)
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events 'passed', 'skipped', 'failed'
+	}
+}

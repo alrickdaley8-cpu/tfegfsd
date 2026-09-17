@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "block/scorched_dirt_top",
+    "side": "block/scorched_dirt",
+    "bottom": "block/scorched_dirt"
+  }
+}

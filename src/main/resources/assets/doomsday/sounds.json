@@ -1,0 +1,64 @@
+{
+
+  "siren": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.siren",
+    "sounds": [
+      { "name": "minecraft:block.bell.use", "type": "event", "volume": 0.55, "pitch": 0.42 },
+      { "name": "minecraft:block.note_block.didgeridoo", "type": "event", "volume": 0.5, "pitch": 0.34 },
+      { "name": "minecraft:block.chain.place", "type": "event", "volume": 0.35, "pitch": 0.5 }
+    ]
+  },
+
+  "geiger": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.geiger",
+    "min_delay": 1,
+    "sounds": [
+      { "name": "minecraft:entity.arrow.hit", "type": "event", "volume": 0.18, "pitch": 2.0 },
+      { "name": "minecraft:entity.item.pickup", "type": "event", "volume": 0.14, "pitch": 2.3 },
+      { "name": "minecraft:block.stone_button.click_on", "type": "event", "volume": 0.16, "pitch": 1.8 }
+    ]
+  },
+
+  "nuke_arm": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.nuke_arm",
+    "sounds": [
+      { "name": "minecraft:block.lever.click", "type": "event", "volume": 0.6, "pitch": 0.75 },
+      { "name": "minecraft:block.note_block.bass", "type": "event", "volume": 0.5, "pitch": 0.6 },
+      { "name": "minecraft:block.anvil.land", "type": "event", "volume": 0.22, "pitch": 1.7 }
+    ]
+  },
+
+  "nuke_flash_hiss": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.flash_hiss",
+    "sounds": [
+      { "name": "minecraft:block.lava.extinguish", "type": "event", "volume": 0.7, "pitch": 0.55 },
+      { "name": "minecraft:block.brewing_stand.brew", "type": "event", "volume": 0.6, "pitch": 0.42 },
+      { "name": "minecraft:fire.fire", "type": "event", "volume": 0.5, "pitch": 0.9 }
+    ]
+  },
+
+  "nuke_distant_boom_delayed": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.nuke_distant_boom_delayed",
+    "preload": true,
+    "sounds": [
+      { "name": "minecraft:entity.generic.explode", "type": "event", "volume": 0.9, "pitch": 0.48 },
+      { "name": "minecraft:entity.minecart.riding", "type": "event", "volume": 0.35, "pitch": 0.4 },
+      { "name": "minecraft:block.bubble_column.bubble_pop", "type": "event", "volume": 0.4, "pitch": 0.35 }
+    ]
+  },
+
+  "mushroom_rumble": {
+    "replace": false,
+    "subtitle": "subtitles.doomsday.mushroom_rumble",
+    "sounds": [
+      { "name": "minecraft:ambient.underwater.enter", "type": "event", "volume": 0.5, "pitch": 0.32 },
+      { "name": "minecraft:entity.lightning_bolt.thunder", "type": "event", "volume": 0.45, "pitch": 0.42 },
+      { "name": "minecraft:block.sculk_catalyst.bloom", "type": "event", "volume": 0.4, "pitch": 0.3 }
+    ]
+  }
+}

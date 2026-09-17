@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "igi",
+    "sps",
+    "rir"
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "g": "minecraft:glass_bottle",
+    "s": "minecraft:smooth_stone",
+    "p": "minecraft:piston",
+    "r": "minecraft:redstone_block"
+  },
+  "result": {
+    "item": "doomsday:nuke_standard",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "doomsday:nuke_standard",
+    "minecraft:quartz_block"
+  ],
+  "result": {
+    "item": "doomsday:nuke_little_boy",
+    "count": 1
+  }
+}

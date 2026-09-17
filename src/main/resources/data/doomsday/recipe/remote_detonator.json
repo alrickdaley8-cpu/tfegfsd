@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "bt ",
+    "lew"
+  ],
+  "key": {
+    "b": "minecraft:stone_button",
+    "t": "minecraft:redstone_torch",
+    "l": "minecraft:lever",
+    "e": "minecraft:ender_pearl",
+    "w": "minecraft:weighted_pressure_plate"
+  },
+  "result": {
+    "item": "doomsday:remote_detonator",
+    "count": 1
+  }
+}

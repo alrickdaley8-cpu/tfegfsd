@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    "minecraft:glistering_melon_slice",
+    "minecraft:kelp",
+    "minecraft:glass_bottle",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "item": "doomsday:iodine_tablet",
+    "count": 3
+  }
+}

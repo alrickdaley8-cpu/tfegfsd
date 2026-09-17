@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "Tactical nuclear devices for Minecraft: a four-preset device with a real arming flow, and a detonation that is staged rather than faked — blinding flash, fireball, shockwave rings, a procedural mushroom cloud, cratering, drifting fallout with radiation sickness, and an EMP that silences machines in a bounded zone. Every visual system is fed by one compact server event, so a 50-megaton detonation costs the server a handful of block writes per tick and nothing at all when nothing is armed.",
+  "credits": "Built as a demonstration of staged, server-authoritative effect design on Fabric.",
+  "authors": [
+    "Doomsday Nukes contributors"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/doomsday/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.doomsday.nukes.DoomsdayNukes"
+    ],
+    "client": [
+      "com.doomsday.nukes.client.DoomsdayNukesClient"
+    ],
+    "modmenu": [
+      "com.doomsday.nukes.client.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "doomsday.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "fabric-api": "*",
+    "minecraft": "~1.21.1",
+    "java": ">=21"
+  },
+  "suggests": {
+    "modmenu": ">=11.0.0"
+  },
+  "_comment": [
+    "The three ${...} placeholders above are expanded by `processResources` in build.gradle from",
+    "gradle.properties (mod_id / mod_version / mod_name), so the manifest can never disagree with the",
+    "jar it ships inside. That is also why this file is the only JSON allowed to contain '$'.",
+    "",
+    "'depends' on fabric-api rather than on the individual modules: the mod uses the networking,",
+    "rendering (HUD + entity renderers), command, object-builder and lifecycle-API modules, and an",
+    "aggregate dependency states that plainly. A user installing a partial fabric-api is not a case",
+    "worth breaking the mod for — the loader reports the missing module at startup either way.",
+    "",
+    "'suggests' modmenu is informational: the config screen is reachable without it through",
+    "/doomsday config, which is why the entrypoint class is loaded reflectively by Mod Menu only.",
+    "No 'breaks' entries: nothing here rewrites a vanilla class, and the single mixin targets",
+    "GameRenderer at TAIL in two methods that no other mod is known to replace outright.",
+    "",
+    "minecraft is pinned with '~' (1.21.x patch flow) rather than '>=1.21.1': the mixin selectors, the",
+    "TypedActionResult signature and the blockstate/model schema this jar ships were checked against",
+    "1.21.1 mappings specifically, so a newer patch that changes them should refuse to load rather than",
+    "load and crash on the first detonation."
+  ]
+}

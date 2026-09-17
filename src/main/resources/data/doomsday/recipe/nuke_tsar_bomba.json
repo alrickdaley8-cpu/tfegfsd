@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "doomsday:nuke_standard",
+    "minecraft:netherite_block"
+  ],
+  "result": {
+    "item": "doomsday:nuke_tsar_bomba",
+    "count": 1
+  }
+}

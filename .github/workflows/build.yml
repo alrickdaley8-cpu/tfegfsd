@@ -1,0 +1,91 @@
+name: build
+
+# What this workflow is for, beyond the usual "does it compile":
+#
+# The mod is written against Minecraft 1.21.1 with yarn mappings, and every vanilla symbol in it was
+# checked against that mapping set. The only thing that proves the result is a real javac against the
+# remapped jar, which needs the Fabric maven, the Mojang content servers and a JDK 21 — so this file
+# is the build. `./gradlew build` on a workstation does exactly the same thing.
+#
+# The steps are ordered so the cheapest gate runs first: asset/reference validation is a single-file
+# JDK program with no dependency resolution, so a typo in a blockstate fails in seconds instead of
+# after Loom has downloaded and remapped the game.
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # Loom decompiles and remaps the client jar; its caches are what make the second run on a
+      # branch two minutes instead of six. Keyed on both pin files because either one changes the
+      # artifacts that must be re-fetched.
+      - name: Cache Gradle and Loom
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle/cache
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle.properties', 'settings.gradle', 'build.gradle') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Validate resources and layout
+        run: |
+          java -ea tools/AssetValidator.java src/main/resources
+          python3 tools/selfcheck.py
+          python3 tools/balance_check.py
+
+      - name: Build, test and remap
+        run: ./gradlew --no-daemon --stacktrace build
+
+      - name: Upload the mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: doomsday-nukes-${{ github.ref_name }}
+          path: build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Jar contents
+        if: success()
+        run: |
+          set -e
+          jar=$(ls build/libs/doomsday-nukes-*.jar | grep -v sources | head -1)
+          echo "### Built \`$jar\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python3 - "$jar" <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import sys, zipfile
+          z = zipfile.ZipFile(sys.argv[1])
+          names = z.namelist()
+          print(f"{len(names)} entries, {z.infolist() and sum(i.file_size for i in z.infolist())//1024} KiB unpacked")
+          for want in ("fabric.mod.json", "doomsday.client.mixins.json",
+                       "assets/doomsday/lang/en_us.json", "assets/doomsday/sounds.json",
+                       "data/doomsday/recipe/nuke_standard.json",
+                       "assets/doomsday/shaders/post/doomsday_flash.json",
+                       "com/doomsday/nukes/DoomsdayNukes.class",
+                       "com/doomsday/nukes/client/DoomsdayNukesClient.class"):
+              print(("  ok   " if want in names else "  MISS ") + want)
+          PY
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

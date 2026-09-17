@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.doomsday.nukes.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "environment": "client",
+  "client": [
+    "GameRendererMixin"
+  ],
+  "mixins": [],
+  "server": [],
+  "_comment": [
+    "Client-only and 'required: true' is deliberate. There is exactly one mixin, it targets two",
+    "private GameRenderer methods whose selectors were copied from the pinned yarn javadoc rather than",
+    "from memory, and both injections are TAIL-read-and-add rather than cancellable-replace, so a",
+    "conflicting mod keeps its own FOV change.",
+    "",
+    "'environment' is what keeps a dedicated server from ever resolving GameRenderer: without it the",
+    "mixin would still be applied to a client class in a server's jar and Mixin would fail on the",
+    "missing class \u2014 which 'required: true' then turns into a hard crash at launch. If a future change",
+    "makes any part of this file needed on the server, the right move is a second, server-environment",
+    "config file, not flipping 'required' to false here.",
+    "",
+    "No 'plugin' key: an IMixinConfigPlugin buys acceptance-time filtering, and this mod has nothing to",
+    "filter \u2014 the mixins are unconditional and cheap. Adding one would be the place a silent",
+    "'applyName' typo turns into 'mixin not found', which is the opposite of helpful."
+  ]
+}

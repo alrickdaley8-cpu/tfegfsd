@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "doomsday:nuke_standard",
+    "minecraft:magma_block"
+  ],
+  "result": {
+    "item": "doomsday:nuke_fat_man",
+    "count": 1
+  }
+}

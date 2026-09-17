@@ -1,0 +1,19 @@
+{
+  "targets": [
+    { "name": "swap", "bilinear": false }
+  ],
+  "passes": [
+    {
+      "name": "doomsday:doomsday_flash",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxiliary": []
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "auxiliary": []
+    }
+  ]
+}

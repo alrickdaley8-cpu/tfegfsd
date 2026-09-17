@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "doomsday:block/nuke_tsar_bomba",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "doomsday:block/nuke_tsar_bomba",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "doomsday:block/nuke_tsar_bomba",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "doomsday:block/nuke_tsar_bomba",
+      "y": 270
+    }
+  }
+}
