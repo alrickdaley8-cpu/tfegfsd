@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # the diagnostics push in the "Publish compiler errors" step, and nothing else
 
 concurrency:
   group: build-${{ github.ref }}
@@ -101,6 +101,37 @@ jobs:
             bash tools/annotate.sh build < /tmp/diag.log
           fi
           exit "$status"
+
+      # Annotations are capped at ten per check run and truncated around 1024 characters each, which
+      # is the right budget for a summary and the wrong one for a javac transcript. So the full error
+      # list — every line, with the symbol/location detail lines that make a "cannot find symbol"
+      # actionable — is committed back to this branch as a text file. [skip ci] keeps that commit from
+      # triggering a build of itself; if the file is absent, the build had nothing to report.
+      - name: Publish compiler errors
+        if: failure()
+        run: |
+          set +e
+          mkdir -p ci-diagnostics
+          {
+            echo "# javac / Gradle output for $(git rev-parse --short HEAD)"
+            echo
+            echo "## counts by message"
+            grep -oE "error: [^ ]+( [^ ]+)*" /tmp/build.log | sed 's/error: //' \
+              | sort | uniq -c | sort -rn | head -30
+            echo
+            echo "## all error sites with their symbol and location lines"
+            grep -E "^/home/runner.*|^[[:space:]]+symbol:|^[[:space:]]+location:|^[[:space:]]+required:|^[[:space:]]+found:|error:|warning:" /tmp/build.log \
+              | sed 's|/home/runner/work/tfegfsd/tfegfsd/||' | head -400
+            echo
+            echo "## gradle failure block"
+            grep -A 12 "What went wrong" /tmp/build.log | head -60
+          } > ci-diagnostics/javac-errors.txt
+          wc -l ci-diagnostics/javac-errors.txt
+          git config user.name "ci-diagnostics"
+          git config user.email "ci@localhost"
+          git add -f ci-diagnostics/javac-errors.txt
+          git commit -q -m "ci: compiler errors for ${GITHUB_SHA::7} [skip ci]" || echo "nothing to record"
+          git push -q origin HEAD:"${GITHUB_REF_NAME}" && echo "published"
 
       - name: Upload the test report
         if: failure()
