@@ -1,15 +1,17 @@
 name: build
 
-# What this workflow is for, beyond the usual "does it compile":
+# Why this workflow is load-bearing rather than decorative:
 #
-# The mod is written against Minecraft 1.21.1 with yarn mappings, and every vanilla symbol in it was
-# checked against that mapping set. The only thing that proves the result is a real javac against the
-# remapped jar, which needs the Fabric maven, the Mojang content servers and a JDK 21 — so this file
-# is the build. `./gradlew build` on a workstation does exactly the same thing.
+# The mod targets Minecraft 1.21.1 with yarn mappings, and every vanilla symbol in it was written
+# against that mapping set from documentation rather than from an IDE. The only thing that settles
+# whether the result compiles is javac with the remapped jar on the classpath, which needs the
+# Fabric maven, Mojang's content servers and a JDK 21. So this file is the build. `./gradlew build`
+# on a workstation does the identical thing.
 #
-# The steps are ordered so the cheapest gate runs first: asset/reference validation is a single-file
-# JDK program with no dependency resolution, so a typo in a blockstate fails in seconds instead of
-# after Loom has downloaded and remapped the game.
+# Diagnostics are re-emitted as ::error:: annotations on purpose. Gradle and javac output is only
+# reachable through the run log, which is a downloadable artefact; annotations are part of the check
+# run itself, so a failure is legible from `gh api .../annotations`, from the PR UI, and from the
+# commit status without opening the browser.
 
 on:
   push:
@@ -39,53 +41,92 @@ jobs:
           java-version: "21"
 
       # Loom decompiles and remaps the client jar; its caches are what make the second run on a
-      # branch two minutes instead of six. Keyed on both pin files because either one changes the
-      # artifacts that must be re-fetched.
+      # branch two minutes instead of six. Keyed on the pin files, because changing any of them
+      # changes which artifacts must be re-fetched.
       - name: Cache Gradle and Loom
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            .gradle/cache
+            .gradle
           key: gradle-${{ runner.os }}-${{ hashFiles('gradle.properties', 'settings.gradle', 'build.gradle') }}
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Validate resources and layout
+        shell: bash
         run: |
-          java -ea tools/AssetValidator.java src/main/resources
-          python3 tools/selfcheck.py
-          python3 tools/balance_check.py
+          set +e
+          set +o pipefail
+          fail=0
+          run_check() {
+            name="$1"; shift
+            out="$("$@" 2>&1)" || code=$?
+            code=${code:-0}
+            if [ "$code" -ne 0 ]; then
+              fail=1
+              printf '%s\n' "$out" | head -45 | sed "s|^|::error::[$name] |"
+              printf '::error::[%s] exited %s\n' "$name" "$code"
+            else
+              printf '%s\n' "$out" | tail -3
+            fi
+            code=0
+          }
+          run_check asset-validator java -ea tools/AssetValidator.java src/main/resources
+          run_check selfcheck python3 tools/selfcheck.py
+          run_check balance python3 tools/balance_check.py
+          exit "$fail"
 
       - name: Build, test and remap
-        run: ./gradlew --no-daemon --stacktrace build
+        shell: bash
+        run: |
+          set +e
+          set +o pipefail
+          ./gradlew --no-daemon --stacktrace build > /tmp/build.log 2>&1
+          status=$?
+          cat /tmp/build.log
+          if [ "$status" -ne 0 ]; then
+            # First the compiler's own lines (file:line), then the task that failed, then the
+            # exception summary. Bounded so the annotation list stays readable: 40 real errors is
+            # already "fix these and re-run", not "read a transcript".
+            grep -nE "error:|warning: \[remap|FAILURE|What went wrong|Caused by" /tmp/build.log \
+              | head -40 | sed 's|^[0-9]*:|::error::|'
+            tail -25 /tmp/build.log | sed 's|^|::error::|'
+          fi
+          exit "$status"
 
       - name: Upload the mod jar
         uses: actions/upload-artifact@v4
         with:
-          name: doomsday-nukes-${{ github.ref_name }}
+          name: doomsday-nukes-jar
           path: build/libs/*.jar
           if-no-files-found: error
           retention-days: 30
 
-      - name: Jar contents
+      - name: Report jar contents
         if: success()
         run: |
-          set -e
           jar=$(ls build/libs/doomsday-nukes-*.jar | grep -v sources | head -1)
-          echo "### Built \`$jar\`" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          python3 - "$jar" <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Built \`$(basename "$jar")\` ($(du -h "$jar" | cut -f1))"
+            echo '```'
+            python3 - "$jar" <<'PY'
           import sys, zipfile
           z = zipfile.ZipFile(sys.argv[1])
-          names = z.namelist()
-          print(f"{len(names)} entries, {z.infolist() and sum(i.file_size for i in z.infolist())//1024} KiB unpacked")
+          names = set(z.namelist())
+          print(f"{len(names)} entries")
           for want in ("fabric.mod.json", "doomsday.client.mixins.json",
-                       "assets/doomsday/lang/en_us.json", "assets/doomsday/sounds.json",
+                       "assets/doomsday/lang/en_us.json", "assets/doomsday/lang/de_de.json",
+                       "assets/doomsday/sounds.json",
+                       "assets/doomsday/blockstates/nuke_standard.json",
                        "data/doomsday/recipe/nuke_standard.json",
+                       "data/doomsday/loot_table/blocks/vitrified_sand.json",
                        "assets/doomsday/shaders/post/doomsday_flash.json",
+                       "assets/doomsday/textures/entity/glow.png",
                        "com/doomsday/nukes/DoomsdayNukes.class",
-                       "com/doomsday/nukes/client/DoomsdayNukesClient.class"):
-              print(("  ok   " if want in names else "  MISS ") + want)
+                       "com/doomsday/nukes/client/DoomsdayNukesClient.class",
+                       "com/doomsday/nukes/mixin/GameRendererMixin.class"):
+              print(("  ok    " if want in names else "  MISS  ") + want)
           PY
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
