@@ -24,16 +24,16 @@ repositories {
 }
 
 loom {
-	// Client and server source sets are NOT split: this mod keeps client code in
-	// dedicated @Environment(EnvType.CLIENT) classes and registers it only from the
-	// client entrypoint, so a dedicated server never loads a render class.
-	// `runs` below exists so `./gradlew runClient` targets a predictable dir.
+	// Client and server source sets are NOT split (no `splitEnvironmentSourceSets()`): this mod
+	// keeps client code in dedicated @Environment(EnvType.CLIENT) classes and registers them only
+	// from the client entrypoint, so a dedicated server never loads a render class. The split
+	// variant is tempting — it makes "client class referenced from common code" a *compile* error —
+	// but it also forces the mixin config, the remap setup and the jar task into two-source-set
+	// shape, which is a lot of build machinery to enforce a rule this codebase keeps by layout.
 	runs {
-		client {
-			id = 'client'
-		}
+		// Only the server gets a distinct run directory, so `runClient` and a test server do not
+		// share one ./run folder and step on each other's level-data and config edits.
 		server {
-			id = 'server'
 			runDir = 'run-server'
 		}
 	}
