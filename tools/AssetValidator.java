@@ -108,8 +108,13 @@ public final class AssetValidator {
 	 */
 	private static void collectJava(Path javaRoot, Set<String> blocks, Set<String> items,
 									Set<String> sounds, Set<String> keys) throws IOException {
+		// Declared here rather than passed in: only this method needs the device list, and the
+		// registry sets are built from source text that is read once.
 		Pattern register = Pattern.compile("register\\(\\s*(?:\"([a-z0-9_./]+)\"|preset\\.blockId\\(\\))");
-		Pattern presetKey = Pattern.compile("([A-Z_]{3,})\\(\"([a-z0-9_]+)\",\\s*\"[^\"]*\",\\s*[0-9]");
+		// The enum constants wrap their argument list, so this has to tolerate newlines between the
+		// name, the "(" and the first string: the first argument of every NukePreset constant is its
+		// config key, which is what NukePreset#blockId() turns into "nuke_<key>".
+		Pattern presetKey = Pattern.compile("\\b([A-Z][A-Z0-9_]{2,})\\(\\s*\"([a-z0-9_]+)\"");
 		Pattern sound = Pattern.compile("register\\(\"([a-z0-9_.]+)\"\\)");
 		Pattern key = Pattern.compile("\"((?:gui|block|item|itemGroup|command|subtitle|subtitles|effect|death|tooltip|config)\\.[a-z0-9_.]+)\"");
 		// Concatenated keys: "gui.doomsday.stage." + stage.key() and friends.
@@ -126,6 +131,7 @@ public final class AssetValidator {
 		// Devices are registered per preset, so their ids are computed. Recover the preset config
 		// keys from the enum and rebuild them, rather than hardcoding the list a second time here.
 		Set<String> presetBlocks = new HashSet<>();
+		Set<String> deviceBlocks = new HashSet<>();
 		for (Matcher m = presetKey.matcher(allSources); m.find();) {
 			presetBlocks.add("nuke_" + m.group(2));
 		}
@@ -140,17 +146,34 @@ public final class AssetValidator {
 			}
 		}
 		blocks.addAll(presetBlocks);
+		deviceBlocks.addAll(presetBlocks);
 		for (Matcher m = register.matcher(itemSrc); m.find();) {
 			if (m.group(1) != null) {
 				items.add(m.group(1));
 			}
 		}
 		items.addAll(presetBlocks); // NukeItem per preset, registered under the same path
+		// ModItems#blockItem(Block) derives the id from the block's registry entry, so there is no
+		// literal to match. flash_light is the one block with no item: it exists only as a temporary
+		// light source the detonation places and removes, and giving it a BlockItem would let a player
+		// place an unremovable sun.
+		for (String b : blocks) {
+			if (!"flash_light".equals(b)) {
+				items.add(b);
+			}
+		}
 		for (Matcher m = sound.matcher(soundSrc); m.find();) {
 			sounds.add(m.group(1));
 		}
 		for (Matcher m = key.matcher(allSources); m.find();) {
-			keys.add(m.group(1));
+			String k = m.group(1);
+			// A literal ending in "." is a prefix being concatenated with something computed, not a
+			// translation key: demanding "gui.doomsday.stage." in en_us.json is a false alarm, and the
+			// expansions below are what turn it into a real check.
+			if (k.endsWith(".")) {
+				continue;
+			}
+			keys.add(k);
 		}
 		for (Matcher m = keyPrefix.matcher(allSources); m.find();) {
 			// A prefix like "gui.doomsday.stage." means one key per value the suffix can take; expand
@@ -160,14 +183,26 @@ public final class AssetValidator {
 				for (String stage : STAGES) {
 					keys.add(prefix + stage);
 				}
+			} else if (prefix.endsWith("quality.")) {
+				for (String q : QUALITY) {
+					keys.add(prefix + q);
+				}
+			} else if (prefix.startsWith("block.doomsday.")) {
+				for (String id : deviceBlocks) {
+					keys.add(prefix + id);
+				}
 			}
 		}
 	}
 
+	/** Exactly {@code DetonationStage#key()} for every constant — see DetonationStageTest. */
 	private static final String[] STAGES = {
-		"flash", "fireball", "shockwave", "mushroom_cloud", "crater", "fallout", "emp",
+		"standby", "arming", "flash", "fireball", "shockwave", "mushroom_cloud", "fallout",
 		"aftermath", "complete",
 	};
+
+	/** {@code DoomsdayConfig.Quality}, spelled the way the config screen's keys spell it. */
+	private static final String[] QUALITY = {"LOW", "MEDIUM", "HIGH", "ULTRA"};
 
 	private static String readOrEmpty(Path p) {
 		try {
@@ -220,7 +255,12 @@ public final class AssetValidator {
 	 * not our code ever asks for it, so "unreferenced key" must not fire on these.
 	 */
 	private static boolean isRegistrationName(String key, Set<String> blocks, Set<String> items) {
-		return key.startsWith("block." + NS + ".") || key.startsWith("item." + NS + ".");
+		// Anything Minecraft names by registry id: blocks, items, and the status effect / entity
+		// types that exist so the *game* can label them. Our code never asks for these by key, which
+		// is why "referenced by code" must not complain about them.
+		return key.startsWith("block." + NS + ".") || key.startsWith("item." + NS + ".")
+			|| key.startsWith("effect." + NS + ".") || key.startsWith("entity." + NS + ".")
+			|| key.startsWith("itemGroup." + NS + ".");
 	}
 
 	private static void require(Map<String, Object> lang, String key, String what) {
