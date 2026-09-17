@@ -130,7 +130,11 @@ jobs:
           git config user.name "ci-diagnostics"
           git config user.email "ci@localhost"
           git add -f ci-diagnostics/javac-errors.txt
-          git commit -q -m "ci: compiler errors for ${GITHUB_SHA::7} [skip ci]" || echo "nothing to record"
+          # The skip marker must be in the commit the workflow itself makes, never in a commit a
+          # human pushes: GitHub looks for [skip ci] anywhere in the message, including the body, so
+          # *mentioning* it in a commit message silently disables CI for that push. (Learned the hard
+          # way, by wondering why a push produced no run at all.)
+          git commit -q -m "ci: compiler errors for ${GITHUB_SHA::7} [ski""p ci]" || echo "nothing to record"
           git push -q origin HEAD:"${GITHUB_REF_NAME}" && echo "published"
 
       - name: Upload the test report
