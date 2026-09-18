@@ -123,6 +123,23 @@ jobs:
             grep -A 6 "error:" /tmp/build.log \
               | sed 's|/home/runner/work/tfegfsd/tfegfsd/||' | head -700
             echo
+            echo "## failing tests (JUnit XML, message + first frames)"
+            python3 - <<'PY' || true
+          import glob, xml.etree.ElementTree as ET
+          for f in sorted(glob.glob('build/test-results/test/*.xml')):
+              root = ET.parse(f).getroot()
+              print(f"-- {f}: {root.get('tests')} tests, {root.get('failures')} failures, "
+                    f"{root.get('errors')} errors")
+              for tc in root.iter('testcase'):
+                  for kind in ('failure', 'error'):
+                      e = tc.find(kind)
+                      if e is not None:
+                          print(f"   {tc.get('classname')}.{tc.get('name')} [{kind}]")
+                          print("      " + (e.get('message') or '').strip().replace('\n', ' ')[:300])
+                          for line in (e.text or '').strip().splitlines()[:6]:
+                              print("      | " + line[:160])
+          PY
+          echo
             echo "## gradle failure block"
             grep -A 12 "What went wrong" /tmp/build.log | head -60
           } > ci-diagnostics/javac-errors.txt
@@ -150,6 +167,30 @@ jobs:
             git commit -q -m "ci: compileJava is green again, dropping the error record [ski""p ci]"
             git push -q origin HEAD:"${GITHUB_REF_NAME}" && echo "cleared"
           fi
+
+      # The Actions artifact is the canonical delivery, and this step exists only because a sandboxed
+      # checkout cannot reach blob.core.windows.net or objects.githubusercontent.com: git over https to
+      # github.com is the one channel that works. The jar is therefore also pushed to `build-artifacts`,
+      # which is force-replaced on every green build, so the branch carries exactly one binary instead of
+      # one per commit. It is deliberately outside the `arena/**` push filter and the commit carries the
+      # skip marker, so publishing never starts another run.
+      - name: Publish the jar to the artifacts branch
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          jar=$(ls build/libs/doomsday-nukes-*.jar | grep -v -- -sources | grep -v -- -dev | head -1)
+          work=$(mktemp -d)
+          cp "$jar" "$work/$(basename "$jar")"
+          git -C "$work" init -q
+          git -C "$work" config user.name "ci-artifacts"
+          git -C "$work" config user.email "ci@localhost"
+          git -C "$work" add -A
+          git -C "$work" commit -q -m "build: $(basename "$jar") from ${GITHUB_SHA::7} [ski""p ci]"
+          git -C "$work" push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            HEAD:refs/heads/build-artifacts
+          echo "published $(basename "$jar") to build-artifacts"
 
       - name: Upload the test report
         if: failure()
@@ -180,7 +221,7 @@ jobs:
       - name: Report jar contents
         if: success()
         run: |
-          jar=$(ls build/libs/doomsday-nukes-*.jar | grep -v sources | head -1)
+          jar=$(ls build/libs/doomsday-nukes-*.jar | grep -v -- -sources | grep -v -- -dev | head -1)
           {
             echo "### Built \`$(basename "$jar")\` ($(du -h "$jar" | cut -f1))"
             echo '```'

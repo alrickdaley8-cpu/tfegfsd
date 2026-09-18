@@ -28,7 +28,10 @@ final class MathUtilTest {
 		// answer is hi; pinned here because flipping the order would silently change every clamped
 		// value in the config path rather than fail loudly.
 		assertEquals(1.0F, MathUtil.clamp(5.0F, 2.0F, 1.0F));
-		assertEquals(-1, MathUtil.clamp(-5, 0, 3));
+		// Below the lower bound is the lower bound. This line used to expect -1, which is what a clamp
+		// that mixed up its lo and hi would answer — the CI test run caught it, and the assertion was
+		// the bug: the implementation is the one every caller in the config path depends on.
+		assertEquals(0, MathUtil.clamp(-5, 0, 3));
 	}
 
 	@Test
