@@ -86,8 +86,8 @@ There is no `maven-publish` setup: this mod is distributed as a jar file, not an
 
 4. Deal with the aftermath. Contaminated chunks keep their dose value across relogs and restarts (the
    field is persisted per chunk); the Geiger counter clicks louder as you walk into it; iodine
-   tablets halve the incoming dose for their duration; hazmat goggles reduce it further and stop the
-   flash from blinding you. Radiation sickness stacks an amplifier up to `radiationMaxAmplifier` and
+   tablets halve it for their duration; hazmat goggles cut the dose to a fifth and stop the flash from
+   blinding you. Radiation sickness stacks an amplifier up to `radiationMaxAmplifier` and
    recovers slowly on its own.
 
 Remote detonators link to a device by right-clicking it and fire (or, if `remoteCanDisarm`, cancel)
@@ -182,11 +182,15 @@ volume is removed, flammables are set alight. Nothing in that list is a vanilla 
 a stripped-down clone; each aftermath block is a real block with its own drops, light emission and
 cool-down behaviour.
 
-**Radiation.** A `Long2FloatOpenHashMap` of chunk-position → dose per dimension, on the server, with
-exposure accumulated per player and synced at 20-tick intervals only for players standing in a
-non-zero chunk (there is no broadcast of the whole field). `world/RadiationManager` is the only class
-that knows the field's shape, and it is deliberately usable from commands, the detonation and the HUD
-through four small statics.
+**Radiation.** The field is a `Long2FloatOpenHashMap` of chunk-position → dose per dimension, held by
+`world/DoomsdayWorldData` next to a parallel expiry map — a chunk is contaminated *until* a world-time,
+which is why fallout does not outlive a map reset by a config change. Exposure is accumulated per player
+by `effect/RadiationManager`, the only class allowed to know the field's shape, and synced at 20-tick
+intervals for players standing in a non-zero chunk only (the whole field is never broadcast). Commands,
+the detonation and the HUD all reach it through a handful of statics. Two knobs are worth naming because
+they are not what they look like: `iodineAmplifierReduction` is expressed on the 0..4 sickness-amplifier
+scale and converted to a dose multiplier inside the manager, and the goggles are a *multiplier*
+(`goggleRadiationMultiplier`, 0.2 → a fifth of the dose), not a flat reduction.
 
 **Visual entities.** `fireball`, `shockwave`, `mushroom_cloud`, `fallout`, `cloud_anchor` — five
 `EntityType`s in `SpawnGroup.MISC`, `noSummon`-style (they cannot be spawned by a spawn egg), with
@@ -296,7 +300,8 @@ src/main/java/com/doomsday/nukes/
   compat/                 optional-integration behaviour (beacon-ish EMP restore)
   config/                 DoomsdayConfig (the fields) + ConfigManager (load/save/clamp/derive)
   detonation/             Detonation, DetonationTimeline, DetonationStage, terrain plan, NukePreset
-  effect/                 radiation sickness
+  effect/                 radiation sickness (effect/RadiationSicknessEffect) and the
+                          contamination model (effect/RadiationManager)
   entity/                 the five visual entity types
   gui/                    the common→client screen seam
   item/                   devices, goggles, geiger counter, detonator, iodine
@@ -305,7 +310,7 @@ src/main/java/com/doomsday/nukes/
   registry/               blocks, items, entity types, effects, sound, creative tab
   sound/                  ModSounds + SoundCuePlanner
   util/                   MathUtil, NoiseField, SpatialUtil, DText
-  world/                  RadiationManager, TerrainWorkQueue
+  world/                  DoomsdayWorldData (the saved field), TerrainWorkQueue
 src/main/resources/
   fabric.mod.json         ${id}/${version}/${name} expanded from gradle.properties
   doomsday.client.mixins.json
