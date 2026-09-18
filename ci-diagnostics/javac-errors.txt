@@ -1,4 +1,4 @@
-# javac / Gradle output for be97217
+# javac / Gradle output for 837b043
 
 ## counts by message
 
@@ -6,15 +6,15 @@
 
 ## gradle failure block
 * What went wrong:
-Execution failed for task ':processResources'.
-> Could not copy file '/home/runner/work/tfegfsd/tfegfsd/src/main/resources/fabric.mod.json' to '/home/runner/work/tfegfsd/tfegfsd/build/resources/main/fabric.mod.json'.
-   > Failed to parse template script (your template may contain an error or be trying to use expressions not currently supported): startup failed:
-     SimpleTemplateScript1.groovy: 1: Unexpected input: '(' @ line 1, column 10.
-        out.print("""{
-                 ^
-     
-     1 error
-
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///home/runner/work/tfegfsd/tfegfsd/build/reports/tests/test/index.html
 
 * Try:
-> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':test'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:130)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:282)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:128)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
