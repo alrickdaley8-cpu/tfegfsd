@@ -21,3 +21,8 @@ run-server/
 .factorypath
 .classpath
 .project
+
+# The jar fetched back from the `build-artifacts` branch, so the built mod can sit next to the
+# sources without pretending to be one. The canonical copies are the Actions artifact and that
+# branch; this is a scratch copy and nothing should ever diff it.
+artifacts/
