@@ -97,7 +97,11 @@ public final class MathUtil {
 		float a = Math.max(0.001F, attack);
 		float d = Math.max(0.01F, decay);
 		float up = t < a ? t / a : 1.0F;
-		float down = (float) decay / (decay + Math.max(0.0F, t - a) * 4.0F);
+		// The floored decay, not the raw parameter: `decay = 0` (which the config path allows, and
+		// which an envelope with no tail *means*) divided 0 by 0 and returned NaN into every alpha
+		// and shake amplitude downstream — and a NaN in a vertex buffer is an invisible, permanent
+		// bug. With the floor, a zero tail is simply "no decay", which is what the caller asked for.
+		float down = d / (d + Math.max(0.0F, t - a) * 4.0F);
 		return clamp01(up * up * down);
 	}
 
