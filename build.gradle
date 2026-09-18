@@ -86,11 +86,13 @@ sourceSets {
 processResources {
 	inputs.property 'version', project.version
 
+	// `expand` runs this file through Groovy's template engine, so the manifest is the one JSON in the
+	// project where a dollar-brace pair or a trailing backslash is a build error, comment lines
+	// included. Everything else under src/main/resources is copied verbatim, which is why nothing else
+	// matches here.
 	filesMatching('fabric.mod.json') {
 		expand 'version': project.version, 'id': project.mod_id, 'name': project.mod_name
 	}
-	// Do not let Gson-processed asset JSON choke on Gradle's `$` handling.
-	filesMatching('**/*.json') { }
 }
 
 tasks.withType(JavaCompile).configureEach {

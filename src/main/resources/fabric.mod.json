@@ -36,9 +36,11 @@
     "modmenu": ">=11.0.0"
   },
   "_comment": [
-    "The three ${...} placeholders above are expanded by `processResources` in build.gradle from",
-    "gradle.properties (mod_id / mod_version / mod_name), so the manifest can never disagree with the",
-    "jar it ships inside. That is also why this file is the only JSON allowed to contain '$'.",
+    "The three placeholders above (id, version, name) are expanded by processResources in build.gradle",
+    "from gradle.properties (mod_id / mod_version / mod_name), so the manifest can never disagree with",
+    "the jar it ships inside. That expansion is a Groovy template, which is the one reason this file may",
+    "not contain a dollar sign followed by an open brace, or a trailing backslash, even in a comment: the",
+    "template engine parses it anyway and the build dies in processResources pointing at no file at all.",
     "",
     "'depends' on fabric-api rather than on the individual modules: the mod uses the networking,",
     "rendering (HUD + entity renderers), command, object-builder and lifecycle-API modules, and an",

@@ -4,7 +4,7 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "blit",
+  "vertex": "doomsday:doomsday_flash",
   "fragment": "doomsday:doomsday_flash",
   "attributes": [ { "name": "Position" } ],
   "samplers": [ { "name": "DiffuseSampler" } ],
