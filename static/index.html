@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T2V·LAB — Text to Video Studio</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%236d7bff"/><stop offset=".5" stop-color="%23c45cff"/><stop offset="1" stop-color="%23ff7ad9"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(%23g)"/><path d="M36 32l34 18-34 18z" fill="white"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="bg-noise"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="dot"></div>
+    <div>T2V·LAB<small>MOTION&nbsp;STUDIO</small></div>
+  </div>
+  <nav>
+    <a href="#" class="active">Create</a>
+    <a href="#gallery">Gallery</a>
+  </nav>
+  <div class="top-right">
+    <span class="pill" id="localPill"><span class="led"></span>Local engine · ready</span>
+    <span class="pill" id="cloudPill"><span class="led"></span><span id="cloudPillText">AI models · ready</span></span>
+    <button class="icon-btn" id="settingsBtn" title="API keys & settings">⚙</button>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="eyebrow"><span class="sp">✦</span> text → video · cinematic motion engine</span>
+  <h1>Describe the shot.<br><span class="grad">Watch it move.</span></h1>
+  <p class="sub">Type a prompt, pick a world and a camera move — the local render engine composes
+    a graded 24-fps clip in seconds. Add an API key to unlock full AI video models.</p>
+</section>
+
+<main class="studio">
+  <div class="composer">
+    <div class="pad">
+      <div class="prompt-row">
+        <textarea id="prompt" rows="3" maxlength="600" spellcheck="false"
+          placeholder="a violet nebula blooming with newborn stars…"></textarea>
+      </div>
+      <div class="mini-actions">
+        <button class="chip-btn" id="dice" title="surprise me">🎲 surprise prompt</button>
+        <button class="chip-btn" id="sparkle" title="cinematic prompt enhancement">✦ director's cut</button>
+        <button class="chip-btn" id="seedRand" title="randomize seed"># seed</button>
+      </div>
+      <div class="enhanced" id="enhanced"></div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl wide" id="ctl-engine">
+        <label>Engine</label>
+        <div class="pills"></div>
+      </div>
+      <div class="ctl wide" id="ctl-scene">
+        <label>World <span class="hint">— what the scene is made of</span></label>
+        <div class="pills"></div>
+      </div>
+      <div class="ctl wide" id="ctl-motion">
+        <label>Camera motion <span class="hint">— Higgsfield-style move presets</span></label>
+        <div class="pills"></div>
+      </div>
+      <div class="ctl half" id="ctl-ratio">
+        <label>Frame</label>
+        <div id="ctl-aspect"></div>
+      </div>
+      <div class="ctl half">
+        <label>Extras</label>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <span class="toggle" id="ctl-letterbox"><span class="sw"></span>Cinemascope bars</span>
+        </div>
+      </div>
+      <div class="ctl half">
+        <label>Clip length</label>
+        <div id="ctl-duration"></div>
+      </div>
+      <div class="ctl half">
+        <label>Quality</label>
+        <div id="ctl-quality"></div>
+      </div>
+      <div class="ctl">
+        <label>Seed <span class="hint">— blank = random</span></label>
+        <input class="seed-in" id="seed" type="number" min="0" max="2147483647" placeholder="random">
+      </div>
+    </div>
+
+    <div class="gen-row">
+      <button id="genBtn"><span>✦</span> Generate video</button>
+      <div class="gen-meta">
+        renders on this machine · h264 mp4 · 24 fps<br>
+        <kbd>⌘/Ctrl</kbd> + <kbd>Enter</kbd> to generate · videos land in the gallery below
+      </div>
+    </div>
+  </div>
+</main>
+
+<section class="queue" id="queue"></section>
+
+<section class="gallery" id="gallery">
+  <div class="gal-head">
+    <h2>Recent generations</h2>
+    <span id="galCount"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<footer>
+  <b>T2V·LAB</b> · local procedural motion engine · cloud AI connectors (Replicate / fal.ai) · built for the arena
+</footer>
+
+<!-- lightbox -->
+<div class="overlay" id="lightbox">
+  <div class="lb">
+    <div class="vid">
+      <video id="lbVideo" controls loop playsinline></video>
+    </div>
+    <div class="body">
+      <button class="icon-btn close-x" title="close">✕</button>
+      <div class="prompt" id="lbPrompt"></div>
+      <div class="enh" id="lbEnh"></div>
+      <div class="tags" id="lbTags"></div>
+      <div class="acts">
+        <a class="btn primary" id="lbDownload" href="#">⬇ Download mp4</a>
+        <button class="btn" id="lbRemix">↻ Remix — reuse prompt & seed</button>
+        <button class="btn danger" id="lbDelete">🗑 Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- settings -->
+<div class="overlay" id="settings">
+  <div class="modal-card">
+    <button class="icon-btn close-x" id="closeSettings" title="close">✕</button>
+    <h3>Cloud AI engines</h3>
+    <p>Add an API token to unlock full diffusion-model text-to-video
+      (Kling, Hunyuan, MiniMax and friends via Replicate or fal.ai).
+      Tokens are stored on the server only, never in this repo.</p>
+    <div class="krow">
+      <label>REPLICATE API TOKEN <span class="saved" id="setStatus"></span></label>
+      <input id="repTok" type="password" placeholder="r8_…" autocomplete="off">
+    </div>
+    <div class="krow">
+      <label>FAL.AI KEY</label>
+      <input id="falTok" type="password" placeholder="key_id:key_secret" autocomplete="off">
+    </div>
+    <button class="btn primary" id="saveSettings">Save</button>
+  </div>
+</div>
+
+<div class="toasts"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

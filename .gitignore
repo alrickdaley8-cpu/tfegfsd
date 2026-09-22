@@ -1,0 +1,13 @@
+# runtime data (jobs registry, generated videos, API tokens)
+data/
+outputs/
+*.mp4
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+
+# os / editors
+.DS_Store
+*.swp
