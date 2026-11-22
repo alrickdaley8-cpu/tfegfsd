@@ -1,0 +1,15 @@
+{
+  "name": "NEON BREACH // Arena Survival",
+  "short_name": "NEON BREACH",
+  "description": "A mobile-ready megacity FPS with Netcode 2.0 co-op and PvP, wave survival, weapon building, and sixteen enemy classes.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
