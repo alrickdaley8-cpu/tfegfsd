@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# output / scratch
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+
+# editor / OS junk
+.vscode/
+.idea/
+*.swp

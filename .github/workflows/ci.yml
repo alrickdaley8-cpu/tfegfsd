@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  audit:
+    name: Static audit + wave/rescue simulation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static smoke test (script parse, ids, sections)
+        run: node tools/check.mjs
+      - name: Wave director simulation (waves 1–40)
+        run: node tools/wave-sim.mjs
+      - name: Co-op rescue simulation
+        run: node tools/rescue-sim.mjs
