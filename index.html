@@ -21,6 +21,8 @@
 <meta name="twitter:image" content="./social-preview.png" />
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
+<link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png" />
+<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
 <title>NEON BREACH // Arena Survival</title>
 <style>
   :root{
@@ -134,6 +136,21 @@
     color:#fff;opacity:0;text-shadow:0 0 26px rgba(255,47,208,.9),0 0 60px rgba(47,243,255,.5)}
   #banner.show{animation:bn 2.4s ease-out}
   @keyframes bn{0%{opacity:0;transform:scale(.8)}15%{opacity:1;transform:scale(1)}72%{opacity:1}100%{opacity:0;transform:scale(1.07)}}
+
+  /* ===================== CO-OP RESCUE ===================== */
+  #rescueHud{position:absolute;left:50%;top:57%;transform:translateX(-50%);text-align:center;display:none;pointer-events:none;z-index:13;filter:drop-shadow(0 4px 18px #000)}
+  #rescueHud.on{display:block}
+  #rescueHud .r-label{font:700 9px/1 Consolas,monospace;letter-spacing:4px;color:var(--amber);text-shadow:0 0 14px rgba(255,197,58,.75)}
+  #rescueHud .r-name{font:700 18px/1.15 Consolas,monospace;letter-spacing:4px;color:#fff;margin-top:6px;text-shadow:0 0 18px rgba(255,197,58,.8)}
+  #rescueHud .r-bar{width:230px;height:8px;margin:10px auto 0;border:1px solid rgba(255,197,58,.6);background:rgba(4,8,16,.7);position:relative;overflow:hidden}
+  #rescueHud .r-fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#ffc53a,#8cff3a);box-shadow:0 0 14px rgba(140,255,58,.65);transition:width .12s linear}
+  #rescueHud .r-hint{font:8px/1 Consolas,monospace;letter-spacing:2px;color:#8fa5b5;margin-top:8px}
+  #rescueHud .r-hint b{color:#ffe9a8}
+  #rescueHud.down .r-label{color:var(--red);text-shadow:0 0 14px rgba(255,59,87,.75)}
+  #rescueHud.down .r-bar{border-color:rgba(255,59,87,.55)}
+  #rescueHud.down .r-fill{background:linear-gradient(90deg,#ff3b57,#ffc53a);box-shadow:0 0 14px rgba(255,197,58,.5)}
+  #touchRescue{left:calc(var(--safe-l) + 20px);bottom:calc(var(--safe-b) + clamp(118px,17vw,150px));width:clamp(56px,7.5vw,70px);height:clamp(56px,7.5vw,70px);border-color:rgba(255,197,58,.62)!important;color:#ffe9a8!important;background:rgba(66,40,4,.55)!important;font-size:clamp(6px,.9vw,9px)!important}
+  #touchRescue b{color:#fff}
 
   #vignette{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,rgba(255,0,40,0) 42%,rgba(255,0,40,.78) 100%);transition:opacity .22s}
   #heart{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,rgba(255,0,40,0) 50%,rgba(255,0,40,.5) 100%)}
@@ -833,6 +850,12 @@
     <div id="reloadbar"><i></i></div>
   </div>
   <div id="banner"></div>
+  <div id="rescueHud" aria-hidden="true">
+    <div class="r-label" id="rescueLabel">RESCUE</div>
+    <div class="r-name" id="rescueName">OPERATOR</div>
+    <div class="r-bar"><div class="r-fill" id="rescueFill"></div></div>
+    <div class="r-hint" id="rescueHint">HOLD <b>E</b> TO RESCUE</div>
+  </div>
 </div>
 
 <!-- ============ MOBILE / iPAD CONTROLS ============ -->
@@ -847,6 +870,7 @@
   <button id="touchCrouch" class="touch-btn" type="button" aria-label="Toggle crouch">CROUCH</button>
   <button id="touchSprint" class="touch-btn" type="button" aria-label="Sprint">SPRINT</button>
   <button id="touchPause" class="touch-btn" type="button" aria-label="Pause">Ⅱ</button>
+  <button id="touchRescue" class="touch-btn" type="button" aria-label="Rescue"><span>RES<br>CUE</span></button>
 </div>
 <div id="rotateNotice" aria-hidden="true"><i></i><b>ROTATE TO LANDSCAPE</b><span>NEON BREACH IS OPTIMIZED FOR WIDE-SCREEN TOUCH PLAY</span></div>
 
@@ -952,6 +976,7 @@
       <div><b>F</b><span>Toggle lens FX</span></div>
       <div><b>F1 — F6</b><span>Balance Lab controls</span></div>
       <div><b>MULTIPLAYER</b><span>WebRTC co-op or PvP for up to four operators</span></div>
+      <div><b>E</b><span>Hold to rescue a downed operator (co-op)</span></div>
       <div><b>PHONE / iPAD</b><span>Left stick moves &middot; drag right side to aim &middot; action buttons fire, ADS and jump</span></div>
     </div>
     <div class="btnrow"><button id="briefBack">BACK</button></div>
@@ -1010,7 +1035,7 @@
       <div id="mpSignal" class="mp-signal">OFFLINE</div>
     </header>
     <section class="mp-modes">
-      <button class="mp-mode sel" data-mpmode="COOP"><strong>CO-OP SURVIVAL</strong><span>Share the production wave, enemy state and squad score. Downed operators redeploy.</span></button>
+      <button class="mp-mode sel" data-mpmode="COOP"><strong>CO-OP SURVIVAL</strong><span>Share the production wave, enemy state and squad score. Downed operators can be rescued by teammates within 4m — or auto-redeploy after 5s.</span></button>
       <button class="mp-mode" data-mpmode="PVP"><strong>PVP DEATHMATCH</strong><span>Fight the other operators with synchronized health, eliminations and automatic respawns.</span></button>
     </section>
     <div class="mp-grid">
@@ -1151,7 +1176,11 @@
 
 <div id="loading">LOADING ENGINE&hellip;</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="./vendor/three.min.js"></script>
+<script>if (typeof THREE === "undefined") {
+  // Offline/sandbox fallback: load the official CDN copy if the vendored file was unreachable.
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+}</script>
 <script>
 "use strict";
 (function () {
@@ -5508,7 +5537,7 @@ const TouchControls={
     this.enabled=TOUCH_CAPABLE;
     Input.touchMode=this.enabled;document.body.classList.toggle("touch",this.enabled);
     if(!this.enabled)return;
-    const ids=["touchControls","touchMove","touchStick","touchLook","touchFire","touchAim","touchJump","touchReload","touchWeapon","touchCrouch","touchSprint","touchPause"];
+    const ids=["touchControls","touchMove","touchStick","touchLook","touchFire","touchAim","touchJump","touchReload","touchWeapon","touchCrouch","touchSprint","touchPause","touchRescue"];
     for(let i=0;i<ids.length;i++)this.el[ids[i]]=document.getElementById(ids[i]);
     const self=this,stop=e=>{if(e.cancelable)e.preventDefault();e.stopPropagation();};
     const capture=(el,e)=>{try{el.setPointerCapture(e.pointerId);}catch(x){}};
@@ -5540,6 +5569,7 @@ const TouchControls={
     hold("touchFire",e=>{self.fireIds.add(e.pointerId);Input.mouseDown=true;},e=>{self.fireIds.delete(e.pointerId);Input.mouseDown=self.fireIds.size>0;});
     hold("touchJump",()=>{Input.keys.Space=true;},()=>{Input.keys.Space=false;});
     hold("touchSprint",()=>{Input.keys.ShiftLeft=true;},()=>{Input.keys.ShiftLeft=false;});
+    hold("touchRescue",()=>{Input.keys.KeyE=true;},()=>{Input.keys.KeyE=false;});
     const tap=(id,fn)=>{const el=self.el[id];el.addEventListener("pointerdown",e=>{if(Game.state!=="PLAYING")return;stop(e);pulse();fn(el,e);},{passive:false});};
     tap("touchAim",el=>{Input.aimDown=!Input.aimDown;el.classList.toggle("active",Input.aimDown);});
     tap("touchReload",()=>Weapons.startReload());
@@ -5551,9 +5581,9 @@ const TouchControls={
   },
   resetVisuals(){
     if(!this.enabled||!this.el.touchStick)return;this.el.touchStick.style.transform="translate(-50%,-50%)";
-    const a=["touchFire","touchAim","touchJump","touchCrouch","touchSprint"];for(let i=0;i<a.length;i++)this.el[a[i]].classList.remove("active");
+    const a=["touchFire","touchAim","touchJump","touchCrouch","touchSprint","touchRescue"];for(let i=0;i<a.length;i++)this.el[a[i]].classList.remove("active");
   },
-  reset(){this.moveId=this.lookId=null;this.fireIds.clear();for(let i=0;i<this.holdSets.length;i++)this.holdSets[i].clear();Input.touchMoveX=Input.touchMoveY=0;Input.mouseDown=false;Input.aimDown=false;Input.keys.Space=false;Input.keys.ShiftLeft=false;Player.crouching=false;this.resetVisuals();}
+  reset(){this.moveId=this.lookId=null;this.fireIds.clear();for(let i=0;i<this.holdSets.length;i++)this.holdSets[i].clear();Input.touchMoveX=Input.touchMoveY=0;Input.mouseDown=false;Input.aimDown=false;Input.keys.Space=false;Input.keys.ShiftLeft=false;Input.keys.KeyE=false;Player.crouching=false;this.resetVisuals();}
 };
 TouchControls.init();
 
@@ -5923,11 +5953,32 @@ const Game = {
     this.waveThreat=Math.round((10+n*3.8)*(1+(squad-1)*.28));
     return plan;
   },
+  /* Wave-1 base kit is shown immediately; later classes get a telegraphed
+     warning a beat before their first deployment, so new threats land as
+     a deliberate introduction instead of a surprise (design research and
+     the saw-curve rule: every new mechanic gets a moment to register). */
+  threatAnnounce(n) {
+    const unlockMap={drone:1,hound:1,wasp:1,turret:2,bomber:3,stalker:3,leech:3,engineer:4,shield:4,brute:4,medic:5,sniper:5,mortar:6,splitter:7,sentinel:8};
+    const names=[];let boss=false;
+    for(const t in unlockMap){if(unlockMap[t]===n&&ENEMY_TYPES[t]){names.push(ENEMY_TYPES[t].name);}}
+    if(n%5===0)boss=true;
+    if(names.length)HUD.feed("NEW THREAT PROFILE // "+names.join("  +  "),false);
+    if(boss)HUD.feed("ELITE COMMANDER INBOUND // "+ENEMY_TYPES.warden.name,true);
+  },
+  nextWaveIntel(n) {
+    // Returns a one-line preview of what wave n introduces, for the between-wave reprieve.
+    const unlockMap={drone:1,hound:1,wasp:1,turret:2,bomber:3,stalker:3,leech:3,engineer:4,shield:4,brute:4,medic:5,sniper:5,mortar:6,splitter:7,sentinel:8};
+    const names=[];
+    for(const t in unlockMap){if(unlockMap[t]===n&&ENEMY_TYPES[t])names.push(ENEMY_TYPES[t].name);}
+    if(n%5===0)names.push("ELITE COMMANDER");
+    return names.length?" // "+names.join("  +  "):"";
+  },
   startWave() {
     this.wave++;
     this.spawnPlan = this.buildWave(this.wave);
     this.spawnTimer = 0.2;
     this.waveActive = true;
+    this.threatAnnounce(this.wave);
     HUD.banner("WAVE " + this.wave + " INCOMING");
     Audio_.waveSting();
     HUD.syncAll();
@@ -5959,6 +6010,7 @@ const Game = {
       this.waveActive = false;
       this.waveBreak = 6.0;
       HUD.banner("WAVE " + this.wave + " CLEARED");
+      HUD.feed("REPRIEVE \u2014 NEXT WAVE" + (this.nextWaveIntel(this.wave + 1) || " // HOSTILE PRESSURE"), false);
       // between-wave supply drop near the player
       const ang = rand(0, TAU);
       Pickups.dropFrom(Player.pos.x + Math.cos(ang) * 4, Player.pos.z + Math.sin(ang) * 4, "health");
@@ -6252,7 +6304,7 @@ const BalanceLab = {
    channels. URL-safe manual signaling keeps GitHub Pages fully serverless;
    optional TURN credentials add relay support on restrictive networks. */
 const Net = {
-  open:false, active:false, inMatch:false, pendingStart:false, suppressDisconnect:false,
+  open:false, active:false, inMatch:false, pendingStart:false, suppressDisconnect:false, rescueTargetId:"", rescueKeepT:0, rescueHudT:0,
   role:"", mode:"COOP", localId:"", players:{}, peers:{}, channels:{}, stateChannels:{}, pending:{},
   clientPeer:null, avatars:{}, enemyMirrors:{}, enemySeq:1, remoteDamageSource:null,
   stateT:0, snapT:0, hudT:0, pingT:0, lastSnapshot:null, selfSpawnSeq:-1,
@@ -6264,7 +6316,7 @@ const Net = {
   ],iceCandidatePoolSize:6,bundlePolicy:"max-bundle",rtcpMuxPolicy:"require"}, el:{},
 
   init(){
-    const ids=["multiplayer","mpSignal","mpRoster","mpCode","mpHelp","mpHost","mpInvite","mpJoin","mpApply","mpPaste","mpCopy","mpShare","mpStart","mpLeave","mpBack","mpEnv","mpRuleScore","mpRuleTime","mpChatLog","mpChatInput","mpChatSend","mpRelayUrl","mpRelayUser","mpRelayPass","mpRelaySave","mpRelayStatus","mphud","mpModeHud","mpCountHud","mpScoreboard","mpNetHud"];
+    const ids=["multiplayer","mpSignal","mpRoster","mpCode","mpHelp","mpHost","mpInvite","mpJoin","mpApply","mpPaste","mpCopy","mpShare","mpStart","mpLeave","mpBack","mpEnv","mpRuleScore","mpRuleTime","mpChatLog","mpChatInput","mpChatSend","mpRelayUrl","mpRelayUser","mpRelayPass","mpRelaySave","mpRelayStatus","mphud","rescueHud","rescueLabel","rescueName","rescueFill","rescueHint","mpModeHud","mpCountHud","mpScoreboard","mpNetHud"];
     for(let i=0;i<ids.length;i++)this.el[ids[i]]=document.getElementById(ids[i]);
     this.modeButtons=Array.prototype.slice.call(document.querySelectorAll("[data-mpmode]"));
     const self=this;
@@ -6348,7 +6400,7 @@ const Net = {
     if(pc.iceGatheringState==="complete")return;
     await new Promise(function(resolve){let done=false;const finish=function(){if(done)return;done=true;clearTimeout(timer);resolve();};const timer=setTimeout(finish,8000);pc.addEventListener("icegatheringstatechange",function(){if(pc.iceGatheringState==="complete")finish();});pc.addEventListener("icecandidate",function(e){if(!e.candidate)finish();});});
   },
-  basePlayer(id,name){return {id:id,name:this.safeName(name),connected:true,x:0,y:0,z:22,vx:0,vy:0,vz:0,yaw:0,pitch:0,hp:100,maxHp:100,alive:true,kills:0,deaths:0,score:0,respawnAt:0,spawnSeq:0,firing:false,weapon:0,ping:0,jitter:0,route:"AUTO",lastStateAt:0,lastInputSeq:0,hitTokens:14,lastHitAt:0,lastChatAt:0,entered:true};},
+  basePlayer(id,name){return {id:id,name:this.safeName(name),connected:true,x:0,y:0,z:22,vx:0,vy:0,vz:0,yaw:0,pitch:0,hp:100,maxHp:100,alive:true,kills:0,deaths:0,score:0,respawnAt:0,spawnSeq:0,firing:false,weapon:0,ping:0,jitter:0,route:"AUTO",lastStateAt:0,lastInputSeq:0,hitTokens:14,lastHitAt:0,lastChatAt:0,rescueAt:0,rescueProgress:0,rescueActive:false,rescueById:"",invT:0,entered:true};},
   hostRoom(){
     if(!this.supported()){this.status("WEBRTC UNAVAILABLE",false);this.help("THIS BROWSER DOES NOT EXPOSE RTCPeerConnection.");return;}
     this.resetTransport();this.clearVisuals();this.active=true;this.role="host";this.localId=this.makeId("H-");this.players={};this.players[this.localId]=this.basePlayer(this.localId,Operator.name);this.inMatch=false;this.pendingStart=false;this.matchEnded=false;this.chat=[];
@@ -6430,6 +6482,7 @@ const Net = {
     else if(m.t==="ph"&&p&&this.inMatch&&this.mode==="PVP"&&String(m.id)!==peer.id){const dmg=this.consumeHit(p,m.dmg);if(dmg)this.applyPlayerDamage(String(m.id||""),dmg,peer.id,!!m.head);}
     else if(m.t==="down"&&p&&this.inMatch&&p.alive)this.applyPlayerDamage(peer.id,p.hp+1,"ENEMY",false);
     else if(m.t==="chat"&&p)this.acceptChat(p,m.text);
+    else if(m.t==="rescue"&&this.inMatch&&this.mode==="COOP"){const target=this.players[String(m.id||"")];if(target&&!target.alive&&String(target.id)!==peer.id){if(!!m.on)this.startRescue(peer.id,target);else this.stopRescue(target,peer.id);}}
   },
   acceptClientState(p,m){
     const seq=m.seq|0;if(seq&&seq<=p.lastInputSeq)return;if(seq)p.lastInputSeq=seq;const now=performance.now();p.ping=clamp(+m.ping||0,0,2000);p.jitter=clamp(+m.jitter||0,0,1000);if(!p.alive){p.lastStateAt=now;return;}
@@ -6503,7 +6556,7 @@ const Net = {
     this.preparePlayers();this.matchId=this.makeId("M-");this.matchRemaining=this.rules.timeLimit;this.matchEnded=false;this.sendAll({t:"start",v:2,mode:this.mode,rules:this.rules,matchId:this.matchId,players:this.playerSnapshot()});this.beginMatch();
   },
   preparePlayers(){
-    const ids=Object.keys(this.players);for(let i=0;i<ids.length;i++){const p=this.players[ids[i]],sp=this.spawnPoint(i);p.x=sp.x;p.y=0;p.z=sp.z;p.vx=p.vy=p.vz=0;p.hp=p.maxHp=100;p.alive=true;p.respawnAt=0;p.spawnSeq++;p.kills=0;p.deaths=0;p.score=0;p.lastStateAt=0;p.lastInputSeq=0;p.hitTokens=14;p.lastHitAt=0;p.entered=p.id===this.localId;}
+    const ids=Object.keys(this.players);for(let i=0;i<ids.length;i++){const p=this.players[ids[i]],sp=this.spawnPoint(i);p.x=sp.x;p.y=0;p.z=sp.z;p.vx=p.vy=p.vz=0;p.hp=p.maxHp=100;p.alive=true;p.respawnAt=0;p.spawnSeq++;p.kills=0;p.deaths=0;p.score=0;p.lastStateAt=0;p.lastInputSeq=0;p.hitTokens=14;p.lastHitAt=0;p.rescueAt=0;p.rescueProgress=0;p.rescueActive=false;p.rescueById="";p.invT=0;p.entered=p.id===this.localId;}
   },
   spawnPoint(i){return World.playerSpawnPoint(i||0);},
   beginMatch(){
@@ -6516,18 +6569,81 @@ const Net = {
   },
   tick(dt){
     if(!this.active||!this.inMatch)return;this.stateT-=dt;this.snapT-=dt;this.hudT-=dt;this.pingT-=dt;
-    if(this.isHost())this.hostTick();else this.clientTick();
+    if(this.isHost()){this.hostTick(dt);this.hostRescueCheck();}else this.clientTick();
     this.updateAvatars(dt);if(this.hudT<=0){this.hudT=.16;this.renderHUD();}
+    this.rescueHUD(dt);
   },
-  hostTick(){
+  hostTick(dt){
     const me=this.players[this.localId];if(me){me.x=Player.pos.x;me.y=Player.pos.y;me.z=Player.pos.z;me.vx=Player.vel.x;me.vy=Player.vel.y;me.vz=Player.vel.z;me.yaw=Player.yaw;me.pitch=Player.pitch;me.hp=Player.hp;me.alive=Player.alive;me.firing=Player.alive&&Input.mouseDown;me.weapon=Weapons.index;me.route="HOST";}
-    const now=performance.now(),ids=Object.keys(this.players);for(let i=0;i<ids.length;i++){const p=this.players[ids[i]];if(!p.alive&&p.respawnAt&&now>=p.respawnAt)this.respawnPlayer(p,i);}
+    const now=performance.now(),ids=Object.keys(this.players);for(let i=0;i<ids.length;i++){const p=this.players[ids[i]];if(p.invT>0)p.invT=Math.max(0,p.invT-dt);if(!p.alive){this.updateRescue(p,dt,now);if(p.respawnAt&&now>=p.respawnAt)this.respawnPlayer(p,i);}}
     if(this.mode==="PVP"){this.matchRemaining=this.rules.timeLimit?Math.max(0,this.rules.timeLimit-(now-this.matchStartedAt)/1000):0;if(this.checkPvpEnd())return;}
     if(this.pingT<=0){this.pingT=1;this.broadcastLobby();}this.syncAvatars();if(this.snapT<=0){this.snapT=.05;this.broadcastSnapshot();}
+  },
+  /* The host rescues too: holding E near a downed teammate channels the same rescue. */
+  hostRescueCheck(){
+    if(!this.active||!this.inMatch||this.mode!=="COOP"||this.suppressDisconnect)return;
+    const meId=this.localId;let want=null,targetD=Infinity;
+    if(Player.alive){
+      const ids=Object.keys(this.players);
+      for(let i=0;i<ids.length;i++){const p=this.players[ids[i]];if(!p||p.alive||p.id===meId||p.entered===false)continue;const d=Math.hypot((p.x||0)-Player.pos.x,(p.z||0)-Player.pos.z);if(d<=4.6&&d<targetD){targetD=d;want=p;}}
+    }
+    const hold=Player.alive&&!!Input.key("KeyE");
+    const ids2=Object.keys(this.players);
+    for(let i=0;i<ids2.length;i++){const p=this.players[ids2[i]];if(!p||p.alive)continue;if(p.rescueById===meId){if(!hold||p!==want)this.stopRescue(p,meId);}}
+    if(hold&&want&&!want.rescueActive){this.startRescue(meId,want);}
+  },
+  /* Co-op rescue: a downed operator leaves a rescue ring at the fall site. A teammate
+     holding E within 4.6m channels the channel over ~2.2s; the host tracks progress and
+     stands the operator back up at 60% HP with brief invulnerability. Auto-respawn stays
+     as the fallback if nobody comes. */
+  startRescue(actorId,p){
+    if(!p||p.alive)return;
+    if(p.rescueActive&&p.rescueById===actorId){return;}
+    p.rescueById=actorId;p.rescueActive=true;p.rescueAt=performance.now();p.rescueProgress=Math.max(p.rescueProgress||0,0);
+  },
+  stopRescue(p,actorId){
+    if(p.rescueById===actorId){p.rescueById="";p.rescueActive=false;p.rescueProgress=0;}
+  },
+  updateRescue(p,dt,now){
+    if(this.mode!=="COOP"){p.rescueProgress=0;p.rescueActive=false;p.rescueById="";return;}
+    if(!p.rescueActive)return;
+    const rescuer=p.rescueById?this.players[p.rescueById]:null;
+    const valid=rescuer&&rescuer.alive&&rescuer.entered!==false&&Math.hypot((rescuer.x||0)-(p.x||0),(rescuer.z||0)-(p.z||0))<=4.6;
+    if(!valid){p.rescueActive=false;p.rescueById="";p.rescueProgress=0;return;}
+    p.rescueProgress=(p.rescueProgress||0)+dt/2.2;
+    if(p.rescueProgress>=1)this.revivePlayer(p);
+  },
+  revivePlayer(p){
+    const rescuer=p.rescueById?this.players[p.rescueById]:null;
+    const rescuerName=rescuer?rescuer.name:"SQUAD";
+    p.alive=true;p.hp=Math.round(p.maxHp*0.6);p.respawnAt=0;p.rescuedById=p.rescueById||"";p.rescueAt=0;p.rescueProgress=0;p.rescueActive=false;p.rescueById="";p.invT=1.5;p.spawnSeq++;p.lastStateAt=0;p.hitTokens=14;p.vx=p.vy=p.vz=0;
+    const text=rescuerName+" RESCUED "+p.name;
+    HUD.feed(text,false);this.sendAll({t:"event",text:text,hot:false});
+    if(p.id===this.localId){Player.hp=p.hp;Player.alive=true;Player.vel.set(0,0,0);HUD.syncAll();}
   },
   clientTick(){
     if(this.stateT<=0){this.stateT=.033;this.sendHostState({t:"state",seq:++this.inputSeq,x:Player.pos.x,y:Player.pos.y,z:Player.pos.z,vx:Player.vel.x,vy:Player.vel.y,vz:Player.vel.z,yaw:Player.yaw,pitch:Player.pitch,firing:Player.alive&&Input.mouseDown,weapon:Weapons.index,ping:this.latency,jitter:this.jitter});}
     if(this.pingT<=0){this.pingT=1;this.sendHost({t:"ping",n:++this.pingSeq,ts:performance.now()});}
+    this.rescueTick(.033);
+  },
+  /* Client-side rescue channel. The prompt is computed locally; the host stays
+     authoritative for progress and revive completion. */
+  rescueTick(){
+    if(!this.active||!this.inMatch||this.mode!=="COOP"||this.isHost()||!Player.alive){
+      if(this.rescueTargetId){this.sendHost({t:"rescue",id:this.rescueTargetId,on:false});this.rescueTargetId="";}
+      return;
+    }
+    const ids=Object.keys(this.players);let target=null,targetD=Infinity;
+    for(let i=0;i<ids.length;i++){const p=this.players[ids[i]];if(!p||p.alive||p.id===this.localId||p.entered===false)continue;const d=Math.hypot((p.x||0)-Player.pos.x,(p.z||0)-Player.pos.z);if(d<=4.6&&d<targetD){targetD=d;target=p;}}
+    const want=target&&Input.key("KeyE")?target.id:"";
+    if(want!==this.rescueTargetId){
+      this.sendHost({t:"rescue",id:this.rescueTargetId||"",on:false});
+      this.rescueTargetId=want;
+      if(want){this.sendHost({t:"rescue",id:want,on:true});this.rescueKeepT=0;}
+    }else if(want&&this.rescueKeepT<=0){
+      this.sendHost({t:"rescue",id:want,on:true});this.rescueKeepT=1.1;
+    }
+    this.rescueKeepT=Math.max(0,this.rescueKeepT-.033);
   },
   checkPvpEnd(){
     if(this.mode!=="PVP"||this.matchEnded)return false;const list=Object.keys(this.players).map(id=>this.players[id]).sort((a,b)=>b.kills-a.kills||a.deaths-b.deaths),leader=list[0];if(leader&&leader.kills>=this.rules.scoreLimit){this.finishMatch(leader.name,"SCORE LIMIT",this.playerSnapshot(),false);return true;}if(this.rules.timeLimit&&this.matchRemaining<=0){this.finishMatch(leader?leader.name:"NO WINNER","TIME LIMIT",this.playerSnapshot(),false);return true;}return false;
@@ -6535,7 +6651,7 @@ const Net = {
   finishMatch(winner,reason,players,remote){
     if(this.matchEnded)return;this.matchEnded=true;if(players&&players.length)this.mergePlayers(players);const finalPlayers=this.playerSnapshot();if(this.isHost()&&!remote)this.sendAll({t:"end",winner:winner,reason:reason,players:finalPlayers});this.inMatch=false;this.pendingStart=false;this.el.mphud.classList.remove("on");this.clearVisuals();Input.clear();Game.toMenu();this.open=true;this.el.multiplayer.classList.remove("hidden");this.status("MATCH COMPLETE // "+String(reason),true);this.help(String(winner)+" WINS // "+String(reason)+". HOST MAY ADJUST RULES AND START THE NEXT MATCH.");this.addChat("SYSTEM",String(winner)+" WINS // "+String(reason),true);this.syncRuleUI();this.renderLobby();
   },
-  playerSnapshot(){return Object.keys(this.players).map(id=>{const p=this.players[id];return {id:p.id,name:p.name,x:+p.x.toFixed(3),y:+p.y.toFixed(3),z:+p.z.toFixed(3),vx:+p.vx.toFixed(2),vy:+p.vy.toFixed(2),vz:+p.vz.toFixed(2),yaw:+p.yaw.toFixed(3),pitch:+p.pitch.toFixed(3),hp:Math.max(0,Math.round(p.hp)),maxHp:p.maxHp,alive:p.alive,kills:p.kills,deaths:p.deaths,score:p.score,spawnSeq:p.spawnSeq,firing:p.firing,weapon:p.weapon,connected:p.connected!==false,ping:Math.round(p.ping||0),jitter:Math.round(p.jitter||0),route:p.route||"P2P",entered:p.entered!==false};});},
+  playerSnapshot(){return Object.keys(this.players).map(id=>{const p=this.players[id];return {id:p.id,name:p.name,x:+p.x.toFixed(3),y:+p.y.toFixed(3),z:+p.z.toFixed(3),vx:+p.vx.toFixed(2),vy:+p.vy.toFixed(2),vz:+p.vz.toFixed(2),yaw:+p.yaw.toFixed(3),pitch:+p.pitch.toFixed(3),hp:Math.max(0,Math.round(p.hp)),maxHp:p.maxHp,alive:p.alive,kills:p.kills,deaths:p.deaths,score:p.score,spawnSeq:p.spawnSeq,firing:p.firing,weapon:p.weapon,connected:p.connected!==false,ping:Math.round(p.ping||0),jitter:Math.round(p.jitter||0),route:p.route||"P2P",entered:p.entered!==false,rescueProgress:+Math.max(0,Math.min(1,p.rescueProgress||0)).toFixed(3),rescueActive:!!p.rescueActive,invT:+Math.max(0,p.invT||0).toFixed(2)};});},
   enemySnapshot(){
     if(this.mode!=="COOP")return [];
     const out=[];for(let i=0;i<Enemies.list.length;i++){const e=Enemies.list[i];if(e.dead||!e.group.visible)continue;if(!e._netId)this.registerEnemy(e);out.push({id:e._netId,type:e.type,x:+e.pos.x.toFixed(2),y:+e.pos.y.toFixed(2),z:+e.pos.z.toFixed(2),r:+e.group.rotation.y.toFixed(2),hp:Math.max(0,Math.round(e.hp)),max:e.maxHp,state:e.state});}return out;
@@ -6591,12 +6707,12 @@ const Net = {
   },
   hitPlayer(avatar,dmg,head){if(this.mode!=="PVP"||!avatar||avatar.dead)return;if(this.isHost())this.applyPlayerDamage(avatar.id,clamp(+dmg||0,0,220),this.localId,head);else this.sendHost({t:"ph",id:avatar.id,dmg:clamp(+dmg||0,0,220),head:!!head});},
   applyPlayerDamage(targetId,dmg,attackerId,head){
-    if(!this.isHost()||!this.inMatch)return;const target=this.players[targetId];if(!target||!target.alive||target.entered===false)return;dmg=clamp(+dmg||0,0,220);if(!dmg)return;target.hp=Math.max(0,target.hp-dmg);
+    if(!this.isHost()||!this.inMatch)return;const target=this.players[targetId];if(!target||!target.alive||target.entered===false)return;if(target.invT>0)return;dmg=clamp(+dmg||0,0,220);if(!dmg)return;target.hp=Math.max(0,target.hp-dmg);
     if(targetId===this.localId){Player.hp=target.hp;Player.hurtFlash=1;HUD.syncAll();}
-    if(target.hp<=0){target.alive=false;target.deaths++;target.respawnAt=performance.now()+(this.mode==="PVP"?3000:5000);if(targetId===this.localId)Player.alive=false;const killer=this.players[attackerId];if(killer&&attackerId!==targetId){killer.kills++;killer.score+=this.mode==="PVP"?1:0;}const text=(killer?killer.name:"HOSTILES")+" ELIMINATED "+target.name;HUD.feed(text,!!head);this.sendAll({t:"event",text:text,hot:!!head});}
+    if(target.hp<=0){target.alive=false;target.deaths++;target.rescueAt=performance.now();target.rescueProgress=0;target.rescueActive=false;target.rescueById="";target.invT=0;target.respawnAt=performance.now()+(this.mode==="PVP"?3000:5000);if(targetId===this.localId)Player.alive=false;const killer=this.players[attackerId];if(killer&&attackerId!==targetId){killer.kills++;killer.score+=this.mode==="PVP"?1:0;}const text=(killer?killer.name:"HOSTILES")+" ELIMINATED "+target.name;HUD.feed(text,!!head);this.sendAll({t:"event",text:text,hot:!!head});}
   },
   onLocalDown(){
-    if(!this.active||!this.inMatch)return;if(this.isHost()){const p=this.players[this.localId];if(p){p.hp=0;p.alive=false;p.deaths++;p.respawnAt=performance.now()+(this.mode==="PVP"?3000:5000);}}else this.sendHost({t:"down"});HUD.feed("OPERATOR DOWN — REDEPLOY INBOUND",true);
+    if(!this.active||!this.inMatch)return;if(this.isHost()){const p=this.players[this.localId];if(p){p.hp=0;p.alive=false;p.deaths++;p.rescueAt=performance.now();p.rescueProgress=0;p.rescueActive=false;p.rescueById="";p.invT=0;if(this.mode==="COOP")HUD.feed("OPERATOR DOWN — SQUAD RESCUE INBOUND",true);else HUD.feed("OPERATOR DOWN — REDEPLOY INBOUND",true);p.respawnAt=performance.now()+(this.mode==="PVP"?3000:5000);}}else this.sendHost({t:"down"});
   },
   respawnPlayer(p,index){
     const sp=this.spawnPoint((index+p.deaths)%6);p.x=sp.x;p.y=0;p.z=sp.z;p.vx=p.vy=p.vz=0;p.hp=p.maxHp;p.alive=true;p.respawnAt=0;p.spawnSeq++;p.lastStateAt=0;p.hitTokens=14;
@@ -6640,11 +6756,12 @@ const Net = {
     const shotgun=new THREE.Group();weaponPivot.add(shotgun);weapons.push(shotgun);part(shotgun,new THREE.BoxGeometry(1,1,1),armor,0,0,-.3,0,0,0,.26,.3,.68);part(shotgun,new THREE.CylinderGeometry(.5,.5,1,10),dark,0,.03,-.88,Math.PI/2,0,0,.11,.8,.11);part(shotgun,new THREE.CylinderGeometry(.5,.5,1,10),glow,0,-.11,-.65,Math.PI/2,0,0,.07,.55,.07);part(shotgun,new THREE.BoxGeometry(1,1,1),dark,0,-.2,-.42,0,0,0,.22,.25,.34);
     const muzzle=part(weaponPivot,new THREE.SphereGeometry(.5,8,6),flashMat,0,.02,-1.28,0,0,0,.22,.22,.34);muzzle.visible=false;
     const ring=part(group,new THREE.TorusGeometry(.52,.035,6,28),new THREE.MeshBasicMaterial({color:color,transparent:true,opacity:.68}),0,.045,0,Math.PI/2,0,0,1,1,1);
+    const rescueRing=part(group,new THREE.RingGeometry(1.28,1.44,40),new THREE.MeshBasicMaterial({color:0xffc53a,transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}),0,.07,0,-Math.PI/2,0,0,1,1,1);rescueRing.visible=false;
     const shadow=part(group,new THREE.CircleGeometry(.58,22),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.34,depthWrite:false,side:THREE.DoubleSide}),0,.025,0,-Math.PI/2,0,0,1,1,1);
     // Invisible compact hit volumes are independent from decorative armor.
     const hitMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false});
     const bodyHit=part(group,new THREE.BoxGeometry(.82,1.28,.56),hitMat,0,1.13,0,0,0,0,1,1,1),headHit=part(group,new THREE.SphereGeometry(.34,8,6),hitMat,0,1.79,0,0,0,1,1,1);
-    const av={id:p.id,name:p.name,group:group,rig:rig,headRig:headRig,bodyHit:bodyHit,headHit:headHit,leftLeg:legs[0],rightLeg:legs[1],leftArm:arms[0],rightArm:arms[1],weaponPivot:weaponPivot,weaponModels:weapons,muzzle:muzzle,ring:ring,shadow:shadow,pos:new THREE.Vector3(p.x||0,p.y||0,p.z||0),target:new THREE.Vector3(p.x||0,p.y||0,p.z||0),hp:p.hp||100,maxHp:100,dead:!p.alive,targetYaw:0,targetPitch:0,speed:0,firing:false,weapon:clamp(p.weapon|0,0,2),walkT:Math.random()*TAU,recoil:0,conf:{blood:color,name:p.name},hurt:function(dmg,dir,isHead){Net.hitPlayer(this,dmg,isHead);}};
+    const av={id:p.id,name:p.name,group:group,rig:rig,headRig:headRig,bodyHit:bodyHit,headHit:headHit,leftLeg:legs[0],rightLeg:legs[1],leftArm:arms[0],rightArm:arms[1],weaponPivot:weaponPivot,weaponModels:weapons,muzzle:muzzle,ring:ring,rescueRing:rescueRing,shadow:shadow,pos:new THREE.Vector3(p.x||0,p.y||0,p.z||0),target:new THREE.Vector3(p.x||0,p.y||0,p.z||0),hp:p.hp||100,maxHp:100,dead:!p.alive,targetYaw:0,targetPitch:0,speed:0,firing:false,weapon:clamp(p.weapon|0,0,2),walkT:Math.random()*TAU,recoil:0,conf:{blood:color,name:p.name},hurt:function(dmg,dir,isHead){Net.hitPlayer(this,dmg,isHead);}};
     for(let q=0;q<weapons.length;q++)weapons[q].visible=q===av.weapon;
     bodyHit.userData.enemy=av;bodyHit.userData.part="body";headHit.userData.enemy=av;headHit.userData.part="head";group.position.copy(av.pos);return av;
   },
@@ -6659,10 +6776,38 @@ const Net = {
       a.headRig.rotation.x=damp(a.headRig.rotation.x,alive*clamp(a.targetPitch*.45,-.5,.5),10,dt);a.rig.position.y=damp(a.rig.position.y,alive?Math.abs(Math.sin(a.walkT))*move*.035:.08,10,dt);a.rig.rotation.z=damp(a.rig.rotation.z,a.dead?1.32:0,a.dead?5:10,dt);
       for(let q=0;q<a.weaponModels.length;q++)a.weaponModels[q].visible=alive&&q===a.weapon;a.weaponPivot.rotation.x=damp(a.weaponPivot.rotation.x,alive*clamp(a.targetPitch*.55,-.55,.55),12,dt);if(a.firing&&alive)a.recoil=Math.max(a.recoil,.12);a.recoil=damp(a.recoil,0,18,dt);a.weaponPivot.position.z=-.45+a.recoil;
       a.muzzle.visible=alive&&a.firing&&Math.sin(performance.now()*.06)>-.15;if(a.muzzle.visible){const ms=.78+Math.random()*.55;a.muzzle.scale.set(.22*ms,.22*ms,.34*ms);a.muzzle.rotation.z+=dt*18;}a.ring.material.opacity=a.dead?.22:.5+Math.sin(performance.now()*.004+i)*.18;a.ring.scale.setScalar(a.dead?1.35:1);a.shadow.material.opacity=a.dead?.18:.34;
+      if(a.rescueRing){const rescue=a.dead&&Net.inMatch&&Net.mode==="COOP";a.rescueRing.visible=rescue;if(rescue){a.rescueRing.rotation.z+=dt*1.5;const rr=1+Math.sin(performance.now()*.005+i*1.7)*.1;a.rescueRing.scale.setScalar(rr);a.rescueRing.material.opacity=.4+Math.sin(performance.now()*.006+i*1.3)*.24;}}
     }
   },
   appendPlayerTargets(targets){const keys=Object.keys(this.avatars);for(let i=0;i<keys.length;i++){const a=this.avatars[keys[i]];if(!a.dead&&a.group.visible){targets.push(a.bodyHit);targets.push(a.headHit);}}},
   removeAvatar(id){const a=this.avatars[id];if(!a)return;scene.remove(a.group);a.group.traverse(function(o){if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose();});delete this.avatars[id];},
+  /* Prompt the local operator: who is downed, and whether they can rescue them. */
+  rescueHUD(dt){
+    const el=this.el.rescueHud;if(!el)return;
+    const coOp=this.active&&this.inMatch&&this.mode==="COOP";
+    if(!coOp){if(this._rescueShown){this._rescueShown=false;el.classList.remove("on");}return;}
+    this.rescueHudT-=dt;if(this.rescueHudT>0)return;this.rescueHudT=.08;
+    const me=this.players[this.localId];
+    if(!me){el.classList.remove("on");this._rescueShown=false;return;}
+    if(!me.alive){
+      this._rescueShown=true;
+      el.classList.add("on");el.classList.add("down");
+      this.el.rescueLabel.textContent="OPERATOR DOWN";
+      this.el.rescueName.textContent=me.name;
+      this.el.rescueFill.style.width=Math.round((me.rescueProgress||0)*100)+"%";
+      this.el.rescueHint.innerHTML="SQUAD RESCUE WITHIN <b>4M</b>";
+      return;
+    }
+    const ids=Object.keys(this.players);let target=null,targetD=Infinity;
+    for(let i=0;i<ids.length;i++){const p=this.players[ids[i]];if(!p||p.alive||p.id===this.localId||p.entered===false)continue;const d=Math.hypot((p.x||0)-Player.pos.x,(p.z||0)-Player.pos.z);if(d<=4.6&&d<targetD){targetD=d;target=p;}}
+    if(!target){if(this._rescueShown){this._rescueShown=false;el.classList.remove("on");}return;}
+    this._rescueShown=true;
+    el.classList.add("on");el.classList.remove("down");
+    this.el.rescueLabel.textContent="RESCUE // "+Math.round(targetD*10)/10+"M";
+    this.el.rescueName.textContent=target.name;
+    this.el.rescueFill.style.width=Math.round((target.rescueProgress||0)*100)+"%";
+    this.el.rescueHint.innerHTML=Input.key("KeyE")?"CHANNELING RESCUE…":"HOLD <b>E</b> TO RESCUE";
+  },
   renderHUD(){
     if(!this.inMatch)return;const ids=Object.keys(this.players);let clock="";if(this.mode==="PVP"&&this.rules.timeLimit){const t=Math.max(0,Math.ceil(this.matchRemaining));clock=" "+Math.floor(t/60)+":"+("0"+(t%60)).slice(-2);}this.el.mpModeHud.textContent=(this.mode==="PVP"?"PVP":"CO-OP")+clock;this.el.mpCountHud.textContent=ids.length+" / 4";this.el.mpScoreboard.innerHTML="";
     ids.sort((a,b)=>(this.players[b].kills-this.players[a].kills));for(let i=0;i<ids.length;i++){const p=this.players[ids[i]],d=document.createElement("div");d.className="mp-score "+(p.alive?"":"dead");const n=document.createElement("strong"),hp=document.createElement("span"),score=document.createElement("b");n.textContent=p.name+(p.id===this.localId?" ◀":"");hp.textContent=p.alive?Math.max(0,Math.round(p.hp))+" HP":"DOWN";score.textContent=this.mode==="PVP"?p.kills+"/"+this.rules.scoreLimit:p.kills+" K";d.appendChild(n);d.appendChild(hp);d.appendChild(score);this.el.mpScoreboard.appendChild(d);}
@@ -6674,7 +6819,7 @@ const Net = {
     else if(this.active){this.status(reason||"HOST DISCONNECTED",false);this.disconnect(reason||"HOST DISCONNECTED");}
     this.renderLobby();
   },
-  clearVisuals(){const a=Object.keys(this.avatars);for(let i=0;i<a.length;i++)this.removeAvatar(a[i]);const e=Object.keys(this.enemyMirrors);for(let i=0;i<e.length;i++){this.enemyMirrors[e[i]].dead=true;this.enemyMirrors[e[i]].group.visible=false;}this.enemyMirrors={};},
+  clearVisuals(){const a=Object.keys(this.avatars);for(let i=0;i<a.length;i++)this.removeAvatar(a[i]);const e=Object.keys(this.enemyMirrors);for(let i=0;i<e.length;i++){this.enemyMirrors[e[i]].dead=true;this.enemyMirrors[e[i]].group.visible=false;}this.enemyMirrors={};if(this.el&&this.el.rescueHud){this.el.rescueHud.classList.remove("on","down");this._rescueShown=false;}this.rescueTargetId="";this.rescueKeepT=0;},
   resetTransport(){
     this.closing=true;const keys=Object.keys(this.peers);for(let i=0;i<keys.length;i++){const p=this.peers[keys[i]];try{if(p.dropTimer)clearTimeout(p.dropTimer);if(p.connectTimer)clearTimeout(p.connectTimer);if(p.dc)p.dc.close();if(p.stateDc)p.stateDc.close();p.pc.close();}catch(e){}}
     if(this.clientPeer)try{if(this.clientPeer.dropTimer)clearTimeout(this.clientPeer.dropTimer);if(this.clientPeer.connectTimer)clearTimeout(this.clientPeer.connectTimer);if(this.clientPeer.dc)this.clientPeer.dc.close();if(this.clientPeer.stateDc)this.clientPeer.stateDc.close();this.clientPeer.pc.close();}catch(e){}

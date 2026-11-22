@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  audit:
+    name: Static audit + wave/rescue/headless/multiplayer simulation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static smoke test (script parse, ids, sections)
+        run: node tools/check.mjs
+      - name: Wave director simulation (waves 1–40)
+        run: node tools/wave-sim.mjs
+      - name: Co-op rescue simulation
+        run: node tools/rescue-sim.mjs
+      - name: Headless boot (real game code, no browser)
+        run: node tools/headless-sim.mjs 600
+      - name: Multiplayer handshake (host-authoritative P2P, no browser)
+        run: node tools/mp-net-sim.mjs 600
