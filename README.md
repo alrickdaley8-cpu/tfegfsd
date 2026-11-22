@@ -81,10 +81,6 @@ repository, so the game loads with no network access.
 
 The game ships a social preview, PWA manifest, and icon set — see Deployment.
 
-> Note: the WebRTC multiplayer needs an HTTPS context (or `localhost`).
-> GitHub Pages satisfies this; opening the file directly from `file://` will
-> run solo play but may not expose peer connections.
-
 ## Controls
 
 | Input | Action |
@@ -209,6 +205,18 @@ Ship the repository root as-is. The site includes a `manifest.webmanifest`
 `icon-512.png` and `icon-192.png` (app icon + iOS touch icon). The game falls
 back gracefully on offline or restricted networks — solo play does not depend
 on the CDN and WebRTC is simply unavailable.
+
+### GitHub Pages (live)
+
+The game is hosted on GitHub Pages at **https://alrickdaley8-cpu.github.io/tfegfsd/** —
+enable it under **Settings → Pages → Source → `main` (or any branch) → `/`**.
+The game is a fully static, relative-pathed single file, so the repository root
+deploys as-is. Once Pages is on, solo play works immediately; WebRTC squad play
+needs the HTTPS context (GitHub Pages provides it).
+
+> Note: the WebRTC multiplayer needs an HTTPS context (or `localhost`).
+> GitHub Pages satisfies this; opening the file directly from `file://` will
+> run solo play but may not expose peer connections.
 
 ## Credits
 
