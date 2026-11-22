@@ -120,6 +120,13 @@ than a copy of it.
 
 CI (`.github/workflows/ci.yml`) runs the same suite on pushes and PRs.
 
+## Design research
+
+The build is grounded in a recorded design study (WebRTC dual-channel networking,
+host-authoritative P2P, backpressure-aware state, difficulty-curve and boss-wave
+pacing, co-op rescue patterns, performance discipline). See [RESEARCH.md](RESEARCH.md)
+for the full notes and source list.
+
 ## Architecture
 
 ```
