@@ -9,6 +9,11 @@ Three.js renders a hand-authored megacity (~144×144, merged geometry), the
 body-cam overlay, 16 enemy classes with custom 3D rigs, pooled particles,
 post-processing, and 100% synthesized audio.
 
+**Fully self-contained.** `vendor/three.min.js` (Three.js r128, vendored from
+the official npm registry tarball) is served alongside the page, so the game
+runs fully offline — no CDN, no network dependency. A CDN fallback is kept in
+place for the rare case where the vendored file is unavailable.
+
 ---
 
 ## Features
@@ -71,6 +76,9 @@ npm run serve          # → http://0.0.0.0:8080
 # or just open index.html in a browser
 ```
 
+The game is fully self-contained: `vendor/three.min.js` ships with the
+repository, so the game loads with no network access.
+
 The game ships a social preview, PWA manifest, and icon set — see Deployment.
 
 > Note: the WebRTC multiplayer needs an HTTPS context (or `localhost`).
@@ -107,6 +115,7 @@ npm test              # run everything below
 node tools/check.mjs      # syntax parse + id/section/wiring audit
 node tools/wave-sim.mjs   # extract the REAL buildWave() and validate pacing
 node tools/rescue-sim.mjs # extract the REAL updateRescue() and check the channel math
+node tools/headless-sim.mjs 240  # real boot + 240 frames, no browser needed
 npm run serve             # zero-dep static server (tools/serve.mjs)
 ```
 
@@ -119,6 +128,12 @@ rescue, balance lab, boot) are wired.
 director and rescue-channel code by brace-balanced parsing and evaluate it in
 isolation — so the survival math is tested against production behavior rather
 than a copy of it.
+
+`tools/headless-sim.mjs` does the same for the whole game: it boots the **real**
+inline script (and the vendored three.min.js) in a `vm` sandbox with a stub
+DOM and no-op WebGL renderer, then pumps hundreds of real game frames. No
+browser binary is needed — this is the runtime check, not a mock: if the game
+fails to boot, hangs, or throws on the menu loop, CI catches it.
 
 CI (`.github/workflows/ci.yml`) runs the same suite on pushes and PRs.
 
@@ -149,7 +164,13 @@ index.html          — the entire game (single self-contained entry point)
    ├─ Balance Lab (playtest harness + automated audit)
    ├─ Multiplayer Netcode 2.0 (WebRTC star topology, dual channels, rescue)
    └─ Boot
-tools/              — static audit + simulation + zero-dep server
+vendor/             — vendored Three.js r128 (offline; CDN fallback in place)
+tools/              — static audit + simulations + zero-dep server
+ ├─ check.mjs       — static smoke test (script parse, ids, sections)
+ ├─ wave-sim.mjs    — real wave-director math (waves 1–40)
+ ├─ rescue-sim.mjs  — real rescue-channel state machine (6 branches)
+ ├─ headless-sim.mjs — real boot + 240-frame runtime check (no browser)
+ └─ serve.mjs       — zero-dep static server
 .github/workflows/  — CI
 ```
 

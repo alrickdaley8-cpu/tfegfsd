@@ -1176,7 +1176,11 @@
 
 <div id="loading">LOADING ENGINE&hellip;</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="./vendor/three.min.js"></script>
+<script>if (typeof THREE === "undefined") {
+  // Offline/sandbox fallback: load the official CDN copy if the vendored file was unreachable.
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+}</script>
 <script>
 "use strict";
 (function () {

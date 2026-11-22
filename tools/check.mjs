@@ -51,7 +51,7 @@ else fail("duplicate top-level const name(s): " + [...new Set(dup)].join(", "));
 // --- 4. core sections and wiring are present ---
 const mustHave = [
   [/<canvas|id="app"/i, "renderer mount point"],
-  [/three\.js/i, "Three.js CDN dependency"],
+  [/three\.js/i, "Three.js vendored + CDN-fallback dependency"],
   [/MULTIPLAYER/i, "multiplayer panel"],
   [/Netcode|Net\.init\(\)/i, "host-authoritative Netcode 2.0 init"],
   [/waveActive|buildWave/i, "wave director"],

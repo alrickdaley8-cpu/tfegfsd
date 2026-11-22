@@ -8,7 +8,7 @@ on:
 
 jobs:
   audit:
-    name: Static audit + wave/rescue simulation
+    name: Static audit + wave/rescue/headless simulation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,3 +21,5 @@ jobs:
         run: node tools/wave-sim.mjs
       - name: Co-op rescue simulation
         run: node tools/rescue-sim.mjs
+      - name: Headless boot (real game code, no browser)
+        run: node tools/headless-sim.mjs 240
