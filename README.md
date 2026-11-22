@@ -71,6 +71,8 @@ npm run serve          # → http://0.0.0.0:8080
 # or just open index.html in a browser
 ```
 
+The game ships a social preview, PWA manifest, and icon set — see Deployment.
+
 > Note: the WebRTC multiplayer needs an HTTPS context (or `localhost`).
 > GitHub Pages satisfies this; opening the file directly from `file://` will
 > run solo play but may not expose peer connections.
@@ -175,6 +177,12 @@ wave bodies, capped).
 Deploy the repository root as a static site (GitHub Pages, Netlify, Vercel,
 Cloudflare Pages). No build step and no runtime backend are required for the
 serverless path — WebRTC invite codes carry the signaling.
+
+Ship the repository root as-is. The site includes a `manifest.webmanifest`
+(standalone PWA, landscape), `social-preview.png` (1200×630 for link unfurls),
+`icon-512.png` and `icon-192.png` (app icon + iOS touch icon). The game falls
+back gracefully on offline or restricted networks — solo play does not depend
+on the CDN and WebRTC is simply unavailable.
 
 ## Credits
 
