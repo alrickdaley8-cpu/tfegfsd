@@ -5961,6 +5961,14 @@ const Game = {
     if(names.length)HUD.feed("NEW THREAT PROFILE // "+names.join("  +  "),false);
     if(boss)HUD.feed("ELITE COMMANDER INBOUND // "+ENEMY_TYPES.warden.name,true);
   },
+  nextWaveIntel(n) {
+    // Returns a one-line preview of what wave n introduces, for the between-wave reprieve.
+    const unlockMap={drone:1,hound:1,wasp:1,turret:2,bomber:3,stalker:3,leech:3,engineer:4,shield:4,brute:4,medic:5,sniper:5,mortar:6,splitter:7,sentinel:8};
+    const names=[];
+    for(const t in unlockMap){if(unlockMap[t]===n&&ENEMY_TYPES[t])names.push(ENEMY_TYPES[t].name);}
+    if(n%5===0)names.push("ELITE COMMANDER");
+    return names.length?" // "+names.join("  +  "):"";
+  },
   startWave() {
     this.wave++;
     this.spawnPlan = this.buildWave(this.wave);
@@ -5998,6 +6006,7 @@ const Game = {
       this.waveActive = false;
       this.waveBreak = 6.0;
       HUD.banner("WAVE " + this.wave + " CLEARED");
+      HUD.feed("REPRIEVE \u2014 NEXT WAVE" + (this.nextWaveIntel(this.wave + 1) || " // HOSTILE PRESSURE"), false);
       // between-wave supply drop near the player
       const ang = rand(0, TAU);
       Pickups.dropFrom(Player.pos.x + Math.cos(ang) * 4, Player.pos.z + Math.sin(ang) * 4, "health");
