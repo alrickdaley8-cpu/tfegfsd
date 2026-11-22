@@ -116,6 +116,7 @@ node tools/check.mjs      # syntax parse + id/section/wiring audit
 node tools/wave-sim.mjs   # extract the REAL buildWave() and validate pacing
 node tools/rescue-sim.mjs # extract the REAL updateRescue() and check the channel math
 node tools/headless-sim.mjs 600  # real boot + 600 gameplay frames, no browser needed
+node tools/mp-net-sim.mjs 600    # two real instances: full WebRTC handshake + live match
 npm run serve             # zero-dep static server (tools/serve.mjs)
 ```
 
@@ -135,6 +136,8 @@ DOM and no-op WebGL renderer, clicks the play button, and pumps 600 real
 gameplay frames. It asserts the boot completes, the menu retires when the run
 starts, the HUD timer ticks, the wave director spawns hostiles, and no frame
 throws. No browser binary is needed — this is the runtime check, not a mock.
+
+`tools/mp-net-sim.mjs` boots **two real instances** of the same game — a host and a client — each in its own sandbox with a fake RTCPeerConnection pairing their data channels. It then runs the actual host-authoritative handshake: the host creates a compressed invite, the client joins and returns an answer, the host accepts it and links both control + state channels, then the host deploys the squad and the client enters the match. The check asserts the invite/answer codes are generated and decoded, the control channel opens, the match-start broadcast reaches the client, both games leave the menu and tick their HUD timers, and both sides render live multiplayer telemetry (host: `HOST AUTHORITY // 20 HZ`, client: `P2P DUAL LINK`). No browser binary is needed.
 
 CI (`.github/workflows/ci.yml`) runs the same suite on pushes and PRs.
 
@@ -171,6 +174,7 @@ tools/              — static audit + simulations + zero-dep server
  ├─ wave-sim.mjs    — real wave-director math (waves 1–40)
  ├─ rescue-sim.mjs  — real rescue-channel state machine (6 branches)
  ├─ headless-sim.mjs — real boot + 600-frame runtime check (no browser)
+├─ mp-net-sim.mjs — double-instance WebRTC handshake + live match runtime check
  └─ serve.mjs       — zero-dep static server
 .github/workflows/  — CI
 ```

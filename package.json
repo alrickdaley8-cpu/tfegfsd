@@ -7,12 +7,13 @@
   "scripts": {
     "serve": "node tools/serve.mjs",
     "start": "node tools/serve.mjs",
-    "test": "node tools/check.mjs && node tools/wave-sim.mjs && node tools/rescue-sim.mjs && node tools/headless-sim.mjs 600",
+    "test": "node tools/check.mjs && node tools/wave-sim.mjs && node tools/rescue-sim.mjs && node tools/headless-sim.mjs 600 && node tools/mp-net-sim.mjs 600",
     "lint": "node tools/check.mjs",
     "check": "node tools/check.mjs",
     "sim:waves": "node tools/wave-sim.mjs",
     "sim:rescue": "node tools/rescue-sim.mjs",
-    "sim:headless": "node tools/headless-sim.mjs 600"
+    "sim:headless": "node tools/headless-sim.mjs 600",
+    "sim:mp": "node tools/mp-net-sim.mjs 600"
   },
   "license": "UNLICENSED",
   "engines": {
