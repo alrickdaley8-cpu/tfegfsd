@@ -22,4 +22,4 @@ jobs:
       - name: Co-op rescue simulation
         run: node tools/rescue-sim.mjs
       - name: Headless boot (real game code, no browser)
-        run: node tools/headless-sim.mjs 240
+        run: node tools/headless-sim.mjs 600

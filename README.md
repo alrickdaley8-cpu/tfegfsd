@@ -115,7 +115,7 @@ npm test              # run everything below
 node tools/check.mjs      # syntax parse + id/section/wiring audit
 node tools/wave-sim.mjs   # extract the REAL buildWave() and validate pacing
 node tools/rescue-sim.mjs # extract the REAL updateRescue() and check the channel math
-node tools/headless-sim.mjs 240  # real boot + 240 frames, no browser needed
+node tools/headless-sim.mjs 600  # real boot + 600 gameplay frames, no browser needed
 npm run serve             # zero-dep static server (tools/serve.mjs)
 ```
 
@@ -131,9 +131,10 @@ than a copy of it.
 
 `tools/headless-sim.mjs` does the same for the whole game: it boots the **real**
 inline script (and the vendored three.min.js) in a `vm` sandbox with a stub
-DOM and no-op WebGL renderer, then pumps hundreds of real game frames. No
-browser binary is needed — this is the runtime check, not a mock: if the game
-fails to boot, hangs, or throws on the menu loop, CI catches it.
+DOM and no-op WebGL renderer, clicks the play button, and pumps 600 real
+gameplay frames. It asserts the boot completes, the menu retires when the run
+starts, the HUD timer ticks, the wave director spawns hostiles, and no frame
+throws. No browser binary is needed — this is the runtime check, not a mock.
 
 CI (`.github/workflows/ci.yml`) runs the same suite on pushes and PRs.
 
@@ -169,7 +170,7 @@ tools/              — static audit + simulations + zero-dep server
  ├─ check.mjs       — static smoke test (script parse, ids, sections)
  ├─ wave-sim.mjs    — real wave-director math (waves 1–40)
  ├─ rescue-sim.mjs  — real rescue-channel state machine (6 branches)
- ├─ headless-sim.mjs — real boot + 240-frame runtime check (no browser)
+ ├─ headless-sim.mjs — real boot + 600-frame runtime check (no browser)
  └─ serve.mjs       — zero-dep static server
 .github/workflows/  — CI
 ```

@@ -62,12 +62,12 @@ function makeCtx2d() {
   };
 }
 
-function makeElement(tag = "div", id = "", doc = null) {
+function makeElement(tag = "div", id = "", doc = null, depth = 0) {
   const classes = new Set();
   const el = {
     tagName: (tag || "div").toUpperCase(),
     id,
-    children: [],
+    children: null, // materialized lazily below
     style: new Proxy({ width: "", height: "", display: "", color: "" }, {
       set(t, k, v) { t[k] = v; return true; },
       get(t, k) {
@@ -88,6 +88,7 @@ function makeElement(tag = "div", id = "", doc = null) {
       replace: (a, b) => { classes.delete(a); classes.add(b); },
     },
     dataset: {},
+    firstElementChild: null, lastElementChild: null,
     textContent: "",
     innerHTML: "",
     value: "",
@@ -109,17 +110,20 @@ function makeElement(tag = "div", id = "", doc = null) {
     insertBefore: (c, ref) => { el.children.unshift(c); return c; },
     append: (...cs) => cs.forEach((c) => el.appendChild(c)),
     prepend: (...cs) => cs.forEach((c) => el.children.unshift(c)),
-    querySelector: () => makeElement("div", "qsel", doc),
+    querySelector: () => makeElement("div", "qsel", doc, depth + 1),
     querySelectorAll: () => [],
     closest: () => null,
     getBoundingClientRect: () => ({ x: 0, y: 0, top: 0, left: 0, right: 800, bottom: 600, width: 800, height: 600 }),
     getClientRects: () => [],
-    addEventListener: () => {}, removeEventListener: () => {},
+    _listeners: {},
+    addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); },
+    removeEventListener(type, fn) { const l = this._listeners[type]; if (l) this._listeners[type] = l.filter((f) => f !== fn); },
     dispatchEvent: (e) => true,
+    click() { const l = this._listeners.click || []; for (const fn of [...l]) fn(); },
+    submit() { (this._listeners.submit || []).forEach((fn) => fn()); },
     focus: () => {}, blur: () => {},
     setAttribute: () => {}, getAttribute: () => null, removeAttribute: () => {},
     hasAttribute: () => false,
-    click: () => {},
     play: () => {}, pause: () => {}, load: () => {},
     insertAdjacentHTML: () => {},
     closest: () => null,
@@ -127,6 +131,18 @@ function makeElement(tag = "div", id = "", doc = null) {
     set textContent(v) { this._text = v; }, get textContent() { return this._text || ""; },
     set innerHTML(v) { this._html = v; this.children = []; }, get innerHTML() { return this._html || ""; },
   };
+  // DOM-tree conveniences the game touches (empty-tree defaults, but the
+  // elements exist so nested access never throws)
+  if (depth < 1) {
+    el.firstElementChild = makeElement("b", "firstChild", doc, depth + 1);
+    el.lastElementChild = el.firstElementChild;
+    el.children = Array.from({ length: 4 }, (_, i) => makeElement("div", "child" + i, doc, depth + 1));
+  } else {
+    el.firstElementChild = null;
+    el.lastElementChild = null;
+    el.children = [];
+  }
+  el.parentElement = null;
   Object.defineProperty(el, "className", {
     get() { return [...classes].join(" "); },
     set(v) { classes.clear(); if (v) String(v).split(/\s+/).forEach((c) => classes.add(c)); },
@@ -135,7 +151,7 @@ function makeElement(tag = "div", id = "", doc = null) {
 }
 
 function makeCanvas(doc) {
-  const el = makeElement("canvas", "canvas", doc);
+  const el = makeElement("canvas", "canvas", doc, 0);
   el.width = 800; el.height = 600;
   el.getContext = (kind) => {
     if (kind === "2d") return makeCtx2d();
@@ -167,7 +183,7 @@ const doc = {
     if (!doc._byId.has(key)) doc._byId.set(key, makeElement("div", key, doc));
     return doc._byId.get(key);
   },
-  querySelector: () => makeElement("div", "qsel", doc),
+  querySelector: () => makeElement("div", "qsel", doc, 1),
   querySelectorAll: () => [],
   addEventListener: () => {}, removeEventListener: () => {},
   exitPointerLock: () => {},
@@ -198,6 +214,14 @@ const windowEvents = {
 const rAF = { callbacks: [], pending: null };
 let nowMs = 0;
 
+function audioParam(v) {
+  return {
+    value: v,
+    setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {},
+    setTargetAtTime() {}, cancelScheduledValues() {}, cancelAndHoldAtTimeAndPropagate() {},
+  };
+}
+
 function makeAudio() {
   return class FakeAudioContext {
     constructor() {
@@ -206,13 +230,13 @@ function makeAudio() {
     }
     createOscillator() {
       return {
-        type: "sine", frequency: { value: 440, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        type: "sine", frequency: audioParam(440),
         detune: { value: 0, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} },
         connect() {}, start() {}, stop() {}, disconnect() {},
       };
     }
     createGain() {
-      const g = { gain: { value: 1, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {}, disconnect() {} };
+      const g = { gain: audioParam(1), connect() {}, disconnect() {} };
       return g;
     }
     createBuffer(ch, len, rate) {
@@ -223,19 +247,19 @@ function makeAudio() {
     }
     createBiquadFilter() {
       return {
-        type: "lowpass", frequency: { value: 350, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} },
-        Q: { value: 1, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} },
-        gain: { value: 1, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        type: "lowpass", frequency: audioParam(350),
+        Q: audioParam(1),
+        gain: audioParam(1),
         connect() {}, disconnect() {},
       };
     }
     createDynamicsCompressor() {
-      return { connect() {}, disconnect() {}, threshold: { value: -24 }, knee: { value: 30 }, ratio: { value: 12 }, attack: { value: 0.003 }, release: { value: 0.25 } };
+      return { connect() {}, disconnect() {}, threshold: { value: -24 }, knee: audioParam(30), ratio: audioParam(12), attack: audioParam(0.003), release: audioParam(0.25) };
     }
     createAnalyser() {
       return { connect() {}, disconnect() {}, fftSize: 256, frequencyBinCount: 128, getByteFrequencyData() {}, getByteTimeDomainData() {}, setValueAtTime() {} };
     }
-    createStereoPanner() { return { pan: { value: 0, setValueAtTime() {}, linearRampToValueAtTime() {} }, connect() {}, disconnect() {} }; }
+    createStereoPanner() { return { pan: audioParam(0), connect() {}, disconnect() {} }; }
     createScriptProcessor() { return { connect() {}, disconnect() {}, onaudioprocess: null, bufferSize: 256 }; }
     resume() { this.state = "running"; return Promise.resolve(); }
     suspend() { return Promise.resolve(); }
@@ -370,9 +394,20 @@ const loadingHidden = loading && loading.style && loading.style.display === "non
 const body = sandbox.document.body;
 
 // ---------------- frame pump ----------------
-const FRAMES = Number(process.argv[2] || 240);
+const FRAMES = Number(process.argv[2] || 600);
 let framesRun = 0, lastError = null;
 const startMs = Date.now();
+
+// start a real run: click the play button. If anything the game needs for
+// play is broken this surfaces right here instead of in a browser.
+let playClicked = false;
+let playError = null;
+try {
+  const playBtn = sandbox.document.getElementById("playBtn");
+  if (playBtn) { playBtn.click(); playClicked = true; }
+} catch (e) {
+  playError = e;
+}
 for (let i = 0; i < FRAMES; i++) {
   nowMs += 1000 / 60;
   if (!rAF.pending) break;
@@ -404,14 +439,28 @@ if (lastError) {
   check("frames: no exception across " + framesRun + " pumped frames", true, "");
 }
 
-// the menu-state machinery ran: the game toggled its body/inmenu class every frame
+// the play button actually started a run: menu UI retired, game is in play
+check("play: play button started a real run", playClicked,
+  playClicked ? "" : "playBtn.click() failed: " + (playError ? playError.message : "no click handler"));
+check("play: play-button handler did not throw", !playError, playError ? String(playError.stack || playError.message).slice(0, 400) : "");
 const inMenuPersisted = body && body.classList && body.classList.contains("inmenu");
-check("frames: menu-state path exercised (body.inmenu set)", !!inMenuPersisted,
-  inMenuPersisted ? "" : "body classes not set after " + framesRun + " frames");
+// after Game.start() (MENU -> PLAYING) the menu class must be gone
+check("play: menu retired (body.inmenu cleared)", playClicked && !inMenuPersisted,
+  inMenuPersisted ? "body.inmenu still set after play click — state did not advance" : "");
 
 // the loop re-registered itself: the game is alive for the next frame
 check("frames: loop re-scheduled (requestAnimationFrame pending)", rAF.pending !== null,
   rAF.pending ? "" : "game loop did not re-schedule");
+
+// the run is actually running: HUD timer ticks and the wave/objective text renders
+const hudTimer = sandbox.document.getElementById("timer");
+const hudWave = sandbox.document.getElementById("left");
+const timerText = hudTimer ? String(hudTimer.textContent) : "";
+const leftText = hudWave ? String(hudWave.textContent) : "";
+check("play: HUD timer ticking (run in progress)", /\d{2}:\d{2}/.test(timerText),
+  "timer=" + JSON.stringify(timerText));
+check("play: wave objective text rendered", /NEXT WAVE|HOSTILES|WAVE/.test(leftText),
+  "left=" + JSON.stringify(leftText));
 
 let failed = 0;
 for (const r of results) {
